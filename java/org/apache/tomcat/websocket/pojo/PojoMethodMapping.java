@@ -212,13 +212,8 @@ public class PojoMethodMapping {
 
     private boolean isOverridenWithoutAnnotation(Method[] methods,
             Method superclazzMethod, Class<? extends Annotation> annotation) {
-        for (Method method : methods) {
-            if (isMethodOverride(method, superclazzMethod)
-                    && (method.getAnnotation(annotation) == null)) {
-                return true;
-            }
-        }
-        return false;
+        return methods.stream().anyMatch(method -> isMethodOverride(method, superclazzMethod)
+                    && (method.getAnnotation(annotation) == null));
     }
 
 
