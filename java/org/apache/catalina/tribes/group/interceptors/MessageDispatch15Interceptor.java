@@ -65,12 +65,7 @@ public class MessageDispatch15Interceptor extends MessageDispatchInterceptor {
     @Override
     public boolean addToQueue(ChannelMessage msg, Member[] destination, InterceptorPayload payload) {
         final LinkObject obj = new LinkObject(msg,destination,payload);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                sendAsyncData(obj);
-            }
-        };
+        Runnable r = () -> sendAsyncData(obj);
         executor.execute(r);
         return true;
     }

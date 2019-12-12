@@ -84,15 +84,10 @@ public class CoyoteInputStream
             try{
                 Integer result =
                     AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
+                            (PrivilegedExceptionAction<Integer>) () -> {
                                 Integer integer = Integer.valueOf(ib.readByte());
                                 return integer;
-                            }
-
-                });
+                            });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();
@@ -114,15 +109,10 @@ public class CoyoteInputStream
             try{
                 Integer result =
                     AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
+                            (PrivilegedExceptionAction<Integer>) () -> {
                                 Integer integer = Integer.valueOf(ib.available());
                                 return integer;
-                            }
-
-                });
+                            });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();
@@ -144,16 +134,11 @@ public class CoyoteInputStream
             try{
                 Integer result =
                     AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
+                            (PrivilegedExceptionAction<Integer>) () -> {
                                 Integer integer =
                                     Integer.valueOf(ib.read(b, 0, b.length));
                                 return integer;
-                            }
-
-                });
+                            });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();
@@ -177,16 +162,11 @@ public class CoyoteInputStream
             try{
                 Integer result =
                     AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
+                            (PrivilegedExceptionAction<Integer>) () -> {
                                 Integer integer =
                                     Integer.valueOf(ib.read(b, off, len));
                                 return integer;
-                            }
-
-                });
+                            });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();
@@ -219,15 +199,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 AccessController.doPrivileged(
-                    new PrivilegedExceptionAction<Void>(){
-
-                        @Override
-                        public Void run() throws IOException{
+                        (PrivilegedExceptionAction<Void>) () -> {
                             ib.close();
                             return null;
-                        }
-
-                });
+                        });
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();
                 if (e instanceof IOException){

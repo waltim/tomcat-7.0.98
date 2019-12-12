@@ -37,21 +37,18 @@ public class Async1 extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final AsyncContext actx = req.startAsync();
         actx.setTimeout(30*1000);
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String path = "/jsp/async/async1.jsp";
-                    Thread.currentThread().setName("Async1-Thread");
-                    log.info("Putting AsyncThread to sleep");
-                    Thread.sleep(2*1000);
-                    log.info("Dispatching to "+path);
-                    actx.dispatch(path);
-                }catch (InterruptedException x) {
-                    log.error("Async1",x);
-                }catch (IllegalStateException x) {
-                    log.error("Async1",x);
-                }
+        Runnable run = () -> {
+            try {
+                String path = "/jsp/async/async1.jsp";
+                Thread.currentThread().setName("Async1-Thread");
+                log.info("Putting AsyncThread to sleep");
+                Thread.sleep(2*1000);
+                log.info("Dispatching to "+path);
+                actx.dispatch(path);
+            }catch (InterruptedException x) {
+                log.error("Async1",x);
+            }catch (IllegalStateException x) {
+                log.error("Async1",x);
             }
         };
         Thread t = new Thread(run);

@@ -361,14 +361,11 @@ public abstract class AbstractOutputBuffer<S> implements OutputBuffer{
         // End the response status line
         if (org.apache.coyote.Constants.IS_SECURITY_ENABLED){
            AccessController.doPrivileged(
-                new PrivilegedAction<Void>(){
-                    @Override
-                    public Void run(){
-                        buf[pos++] = Constants.CR;
-                        buf[pos++] = Constants.LF;
-                        return null;
-                    }
-                }
+                   (PrivilegedAction<Void>) () -> {
+                       buf[pos++] = Constants.CR;
+                       buf[pos++] = Constants.LF;
+                       return null;
+                   }
            );
         } else {
             buf[pos++] = Constants.CR;

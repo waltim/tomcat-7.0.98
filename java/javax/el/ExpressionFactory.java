@@ -60,14 +60,8 @@ public abstract class ExpressionFactory {
     static {
         if (IS_SECURITY_ENABLED) {
             PROPERTY_FILE = AccessController.doPrivileged(
-                    new PrivilegedAction<String>(){
-                        @Override
-                        public String run() {
-                            return System.getProperty("java.home") + File.separator +
-                                    "lib" + File.separator + "el.properties";
-                        }
-
-                    }
+                    (PrivilegedAction<String>) () -> System.getProperty("java.home") + File.separator +
+                            "lib" + File.separator + "el.properties"
             );
         } else {
             PROPERTY_FILE = System.getProperty("java.home") + File.separator + "lib" +
@@ -324,12 +318,7 @@ public abstract class ExpressionFactory {
         if (className == null) {
             if (IS_SECURITY_ENABLED) {
                 className = AccessController.doPrivileged(
-                        new PrivilegedAction<String>() {
-                            @Override
-                            public String run() {
-                                return getClassNameJreDir();
-                            }
-                        }
+                        (PrivilegedAction<String>) () -> getClassNameJreDir()
                 );
             } else {
                 // Second el.properties file
@@ -339,12 +328,7 @@ public abstract class ExpressionFactory {
         if (className == null) {
             if (IS_SECURITY_ENABLED) {
                 className = AccessController.doPrivileged(
-                        new PrivilegedAction<String>() {
-                            @Override
-                            public String run() {
-                                return getClassNameSysProp();
-                            }
-                        }
+                        (PrivilegedAction<String>) () -> getClassNameSysProp()
                 );
             } else {
                 // Third system property

@@ -500,13 +500,7 @@ public class DefaultInstanceManager implements InstanceManager {
         Class<?> clazz;
         if (SecurityUtil.isPackageProtectionEnabled()) {
             try {
-                clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-
-                    @Override
-                    public Class<?> run() throws Exception {
-                        return loadClass(className, classLoader);
-                    }
-                });
+                clazz = AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>) () -> loadClass(className, classLoader));
             } catch (PrivilegedActionException e) {
                 Throwable t = e.getCause();
                 if (t instanceof ClassNotFoundException) {
@@ -685,20 +679,17 @@ public class DefaultInstanceManager implements InstanceManager {
         Method result = null;
         if (Globals.IS_SECURITY_ENABLED) {
             result = AccessController.doPrivileged(
-                    new PrivilegedAction<Method>() {
-                        @Override
-                        public Method run() {
-                            Method result = null;
-                            try {
-                                result = clazz.getDeclaredMethod(
-                                        entry.getAccessibleObjectName(),
-                                        entry.getParamTypes());
-                            } catch (NoSuchMethodException e) {
-                                // Should never happen. On that basis don't log
-                                // it.
-                            }
-                            return result;
+                    (PrivilegedAction<Method>) () -> {
+                        Method result1 = null;
+                        try {
+                            result1 = clazz.getDeclaredMethod(
+                                    entry.getAccessibleObjectName(),
+                                    entry.getParamTypes());
+                        } catch (NoSuchMethodException e) {
+                            // Should never happen. On that basis don't log
+                            // it.
                         }
+                        return result1;
                     });
         } else {
             try {
@@ -716,19 +707,16 @@ public class DefaultInstanceManager implements InstanceManager {
         Field result = null;
         if (Globals.IS_SECURITY_ENABLED) {
             result = AccessController.doPrivileged(
-                    new PrivilegedAction<Field>() {
-                        @Override
-                        public Field run() {
-                            Field result = null;
-                            try {
-                                result = clazz.getDeclaredField(
-                                        entry.getAccessibleObjectName());
-                            } catch (NoSuchFieldException e) {
-                                // Should never happen. On that basis don't log
-                                // it.
-                            }
-                            return result;
+                    (PrivilegedAction<Field>) () -> {
+                        Field result1 = null;
+                        try {
+                            result1 = clazz.getDeclaredField(
+                                    entry.getAccessibleObjectName());
+                        } catch (NoSuchFieldException e) {
+                            // Should never happen. On that basis don't log
+                            // it.
                         }
+                        return result1;
                     });
         } else {
             try {

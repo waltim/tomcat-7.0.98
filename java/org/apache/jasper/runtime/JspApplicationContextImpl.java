@@ -89,12 +89,7 @@ public class JspApplicationContextImpl implements JspApplicationContext {
         ELContextImpl ctx;
         if (Constants.IS_SECURITY_ENABLED) {
             ctx = AccessController.doPrivileged(
-                    new PrivilegedAction<ELContextImpl>() {
-                        @Override
-                        public ELContextImpl run() {
-                            return new ELContextImpl(r);
-                        }
-                    });
+                    (PrivilegedAction<ELContextImpl>) () -> new ELContextImpl(r));
         } else {
             ctx = new ELContextImpl(r);
         }

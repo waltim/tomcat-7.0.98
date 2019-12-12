@@ -86,26 +86,23 @@ public final class DrawboardEndpoint extends Endpoint {
         final Client client = new Client(session);
 
         final Room room = getRoom(true);
-        room.invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
+        room.invokeAndWait(() -> {
+            try {
+
+                // Create a new Player and add it to the room.
                 try {
-
-                    // Create a new Player and add it to the room.
-                    try {
-                        player = room.createAndAddPlayer(client);
-                    } catch (IllegalStateException ex) {
-                        // Probably the max. number of players has been
-                        // reached.
-                        client.sendMessage(new StringWebsocketMessage(
-                                "0" + ex.getLocalizedMessage()));
-                        // Close the connection.
-                        client.close();
-                    }
-
-                } catch (RuntimeException ex) {
-                    log.error("Unexpected exception: " + ex.toString(), ex);
+                    player = room.createAndAddPlayer(client);
+                } catch (IllegalStateException ex) {
+                    // Probably the max. number of players has been
+                    // reached.
+                    client.sendMessage(new StringWebsocketMessage(
+                            "0" + ex.getLocalizedMessage()));
+                    // Close the connection.
+                    client.close();
                 }
+
+            } catch (RuntimeException ex) {
+                log.error("Unexpected exception: " + ex.toString(), ex);
             }
         });
 
@@ -116,23 +113,20 @@ public final class DrawboardEndpoint extends Endpoint {
     public void onClose(Session session, CloseReason closeReason) {
         Room room = getRoom(false);
         if (room != null) {
-            room.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Player can be null if it couldn't enter the room
-                        if (player != null) {
-                            // Remove this player from the room.
-                            player.removeFromRoom();
+            room.invokeAndWait(() -> {
+                try {
+                    // Player can be null if it couldn't enter the room
+                    if (player != null) {
+                        // Remove this player from the room.
+                        player.removeFromRoom();
 
-                            // Set player to null to prevent NPEs when onMessage events
-                            // are processed (from other threads) after onClose has been
-                            // called from different thread which closed the Websocket session.
-                            player = null;
-                        }
-                    } catch (RuntimeException ex) {
-                        log.error("Unexpected exception: " + ex.toString(), ex);
+                        // Set player to null to prevent NPEs when onMessage events
+                        // are processed (from other threads) after onClose has been
+                        // called from different thread which closed the Websocket session.
+                        player = null;
                     }
+                } catch (RuntimeException ex) {
+                    log.error("Unexpected exception: " + ex.toString(), ex);
                 }
             });
         }
@@ -170,62 +164,59 @@ public final class DrawboardEndpoint extends Endpoint {
         @Override
         public void onMessage(final String message) {
             // Invoke handling of the message in the room.
-            room.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
+            room.invokeAndWait(() -> {
+                try {
+
+                    // Currently, the only types of messages the client will send
+                    // are draw messages prefixed by a Message ID
+                    // (starting with char '1'), and pong messages (starting
+                    // with char '0').
+                    // Draw messages should look like this:
+                    // ID|type,colR,colB,colG,colA,thickness,x1,y1,x2,y2,lastInChain
+
+                    boolean dontSwallowException = false;
                     try {
+                        char messageType = message.charAt(0);
+                        String messageContent = message.substring(1);
+                        switch (messageType) {
+                        case '0':
+                            // Pong message.
+                            // Do nothing.
+                            break;
 
-                        // Currently, the only types of messages the client will send
-                        // are draw messages prefixed by a Message ID
-                        // (starting with char '1'), and pong messages (starting
-                        // with char '0').
-                        // Draw messages should look like this:
-                        // ID|type,colR,colB,colG,colA,thickness,x1,y1,x2,y2,lastInChain
+                        case '1':
+                            // Draw message
+                            int indexOfChar = messageContent.indexOf('|');
+                            long msgId = Long.parseLong(
+                                    messageContent.substring(0, indexOfChar));
 
-                        boolean dontSwallowException = false;
-                        try {
-                            char messageType = message.charAt(0);
-                            String messageContent = message.substring(1);
-                            switch (messageType) {
-                            case '0':
-                                // Pong message.
-                                // Do nothing.
-                                break;
+                            DrawMessage msg = DrawMessage.parseFromString(
+                                    messageContent.substring(indexOfChar + 1));
 
-                            case '1':
-                                // Draw message
-                                int indexOfChar = messageContent.indexOf('|');
-                                long msgId = Long.parseLong(
-                                        messageContent.substring(0, indexOfChar));
-
-                                DrawMessage msg = DrawMessage.parseFromString(
-                                        messageContent.substring(indexOfChar + 1));
-
-                                // Don't ignore RuntimeExceptions thrown by
-                                // this method
-                                // TODO: Find a better solution than this variable
-                                dontSwallowException = true;
-                                if (player != null) {
-                                    player.handleDrawMessage(msg, msgId);
-                                }
-                                dontSwallowException = false;
-
-                                break;
+                            // Don't ignore RuntimeExceptions thrown by
+                            // this method
+                            // TODO: Find a better solution than this variable
+                            dontSwallowException = true;
+                            if (player != null) {
+                                player.handleDrawMessage(msg, msgId);
                             }
+                            dontSwallowException = false;
 
-                        } catch (RuntimeException ex) {
-                            // Client sent invalid data.
-                            // Ignore, TODO: maybe close connection
-                            if (dontSwallowException) {
-                                throw ex;
-                            }
-                        } catch (ParseException ex) {
-                            // Client sent invalid data.
-                            // Ignore, TODO: maybe close connection
+                            break;
                         }
+
                     } catch (RuntimeException ex) {
-                        log.error("Unexpected exception: " + ex.toString(), ex);
+                        // Client sent invalid data.
+                        // Ignore, TODO: maybe close connection
+                        if (dontSwallowException) {
+                            throw ex;
+                        }
+                    } catch (ParseException ex) {
+                        // Client sent invalid data.
+                        // Ignore, TODO: maybe close connection
                     }
+                } catch (RuntimeException ex) {
+                    log.error("Unexpected exception: " + ex.toString(), ex);
                 }
             });
 

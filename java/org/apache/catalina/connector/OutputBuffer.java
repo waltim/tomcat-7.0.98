@@ -610,14 +610,7 @@ public class OutputBuffer extends Writer
             if (Globals.IS_SECURITY_ENABLED){
                 try{
                     conv = AccessController.doPrivileged(
-                            new PrivilegedExceptionAction<C2BConverter>(){
-
-                                @Override
-                                public C2BConverter run() throws IOException{
-                                    return new C2BConverter(enc);
-                                }
-
-                            }
+                            (PrivilegedExceptionAction<C2BConverter>) () -> new C2BConverter(enc)
                     );
                 } catch (PrivilegedActionException ex){
                     Exception e = ex.getException();

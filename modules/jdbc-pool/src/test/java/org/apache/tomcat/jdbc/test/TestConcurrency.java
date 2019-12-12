@@ -63,19 +63,16 @@ public class TestConcurrency extends DefaultTestCase {
         ds.getConnection().close();
         final int iter = 1000 * 10;
         final AtomicInteger loopcount = new AtomicInteger(0);
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (loopcount.incrementAndGet() < iter) {
-                        Connection con = ds.getConnection();
-                        Thread.sleep(10);
-                        con.close();
-                    }
-                }catch (Exception x) {
-                    loopcount.set(iter); //stops the test
-                    x.printStackTrace();
+        final Runnable run = () -> {
+            try {
+                while (loopcount.incrementAndGet() < iter) {
+                    Connection con = ds.getConnection();
+                    Thread.sleep(10);
+                    con.close();
                 }
+            }catch (Exception x) {
+                loopcount.set(iter); //stops the test
+                x.printStackTrace();
             }
         };
         Thread[] threads = new Thread[20];
@@ -119,18 +116,15 @@ public class TestConcurrency extends DefaultTestCase {
         ds.getConnection().close();
         final int iter = 100000 * 10;
         final AtomicInteger loopcount = new AtomicInteger(0);
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (loopcount.incrementAndGet() < iter) {
-                        Connection con = ds.getConnection();
-                        con.close();
-                    }
-                }catch (Exception x) {
-                    loopcount.set(iter); //stops the test
-                    x.printStackTrace();
+        final Runnable run = () -> {
+            try {
+                while (loopcount.incrementAndGet() < iter) {
+                    Connection con = ds.getConnection();
+                    con.close();
                 }
+            }catch (Exception x) {
+                loopcount.set(iter); //stops the test
+                x.printStackTrace();
             }
         };
         Thread[] threads = new Thread[20];
@@ -171,18 +165,15 @@ public class TestConcurrency extends DefaultTestCase {
         ds.getConnection().close();
         final int iter = 100000 * 10;
         final AtomicInteger loopcount = new AtomicInteger(0);
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (loopcount.incrementAndGet() < iter) {
-                        Connection con = ds.getConnection();
-                        con.close();
-                    }
-                }catch (Exception x) {
-                    loopcount.set(iter); //stops the test
-                    x.printStackTrace();
+        final Runnable run = () -> {
+            try {
+                while (loopcount.incrementAndGet() < iter) {
+                    Connection con = ds.getConnection();
+                    con.close();
                 }
+            }catch (Exception x) {
+                loopcount.set(iter); //stops the test
+                x.printStackTrace();
             }
         };
         Thread[] threads = new Thread[20];

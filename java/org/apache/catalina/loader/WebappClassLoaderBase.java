@@ -163,12 +163,9 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             if (JreCompat.isJre7Available()) {
                 final Method registerParallel =
                         ClassLoader.class.getDeclaredMethod("registerAsParallelCapable");
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    @Override
-                    public Void run() {
-                        registerParallel.setAccessible(true);
-                        return null;
-                    }
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                    registerParallel.setAccessible(true);
+                    return null;
                 });
                 registerParallel.invoke(null);
                 getClassLoadingLockMethod =

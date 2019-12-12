@@ -96,12 +96,7 @@ public class Introspection {
         Field[] fields = null;
         if (Globals.IS_SECURITY_ENABLED) {
             fields = AccessController.doPrivileged(
-                    new PrivilegedAction<Field[]>(){
-                @Override
-                public Field[] run(){
-                    return clazz.getDeclaredFields();
-                }
-            });
+                    (PrivilegedAction<Field[]>) () -> clazz.getDeclaredFields());
         } else {
             fields = clazz.getDeclaredFields();
         }
@@ -117,12 +112,7 @@ public class Introspection {
         Method[] methods = null;
         if (Globals.IS_SECURITY_ENABLED) {
             methods = AccessController.doPrivileged(
-                    new PrivilegedAction<Method[]>(){
-                @Override
-                public Method[] run(){
-                    return clazz.getDeclaredMethods();
-                }
-            });
+                    (PrivilegedAction<Method[]>) () -> clazz.getDeclaredMethods());
         } else {
             methods = clazz.getDeclaredMethods();
         }
