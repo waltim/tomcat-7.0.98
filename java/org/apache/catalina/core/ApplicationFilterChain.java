@@ -183,16 +183,10 @@ final class ApplicationFilterChain implements FilterChain, CometFilterChain {
             final ServletRequest req = request;
             final ServletResponse res = response;
             try {
-                java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction<Void>() {
-                        @Override
-                        public Void run()
-                            throws ServletException, IOException {
-                            internalDoFilter(req,res);
-                            return null;
-                        }
-                    }
-                );
+                java.security.AccessController.doPrivileged((java.security.PrivilegedExceptionAction<Void>) () -> {
+                    internalDoFilter(req,res);
+                    return null;
+                });
             } catch( PrivilegedActionException pe) {
                 Exception e = pe.getException();
                 if (e instanceof ServletException)
@@ -350,16 +344,10 @@ final class ApplicationFilterChain implements FilterChain, CometFilterChain {
         if( Globals.IS_SECURITY_ENABLED ) {
             final CometEvent ev = event;
             try {
-                java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction<Void>() {
-                        @Override
-                        public Void run()
-                            throws ServletException, IOException {
-                            internalDoFilterEvent(ev);
-                            return null;
-                        }
-                    }
-                );
+                java.security.AccessController.doPrivileged((java.security.PrivilegedExceptionAction<Void>) () -> {
+                    internalDoFilterEvent(ev);
+                    return null;
+                });
             } catch( PrivilegedActionException pe) {
                 Exception e = pe.getException();
                 if (e instanceof ServletException)

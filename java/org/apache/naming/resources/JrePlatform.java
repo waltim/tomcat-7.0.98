@@ -41,14 +41,7 @@ public class JrePlatform {
         if (System.getSecurityManager() == null) {
             osName = System.getProperty(OS_NAME_PROPERTY);
         } else {
-            osName = AccessController.doPrivileged(
-                    new PrivilegedAction<String>() {
-
-                    @Override
-                    public String run() {
-                        return System.getProperty(OS_NAME_PROPERTY);
-                    }
-                });
+            osName = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(OS_NAME_PROPERTY));
         }
 
         IS_WINDOWS = osName.startsWith(OS_NAME_WINDOWS_PREFIX);

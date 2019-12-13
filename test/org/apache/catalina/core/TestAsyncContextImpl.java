@@ -270,26 +270,23 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             result.append('2');
             result.append(req.isAsyncStarted());
 
-            req.getAsyncContext().start(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        result.append('3');
-                        result.append(req.isAsyncStarted());
-                        Thread.sleep(THREAD_SLEEP_TIME);
-                        result.append('4');
-                        result.append(req.isAsyncStarted());
-                        resp.setContentType("text/plain");
-                        resp.getWriter().print("OK");
-                        req.getAsyncContext().complete();
-                        result.append('5');
-                        result.append(req.isAsyncStarted());
-                        done = true;
-                    } catch (InterruptedException e) {
-                        result.append(e);
-                    } catch (IOException e) {
-                        result.append(e);
-                    }
+            req.getAsyncContext().start(() -> {
+                try {
+                    result.append('3');
+                    result.append(req.isAsyncStarted());
+                    Thread.sleep(THREAD_SLEEP_TIME);
+                    result.append('4');
+                    result.append(req.isAsyncStarted());
+                    resp.setContentType("text/plain");
+                    resp.getWriter().print("OK");
+                    req.getAsyncContext().complete();
+                    result.append('5');
+                    result.append(req.isAsyncStarted());
+                    done = true;
+                } catch (InterruptedException e) {
+                    result.append(e);
+                } catch (IOException e) {
+                    result.append(e);
                 }
             });
             // Pointless method call so there is somewhere to put a break point
@@ -331,33 +328,27 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             result.append('2');
             result.append(req.isAsyncStarted());
 
-            req.getAsyncContext().start(new Runnable() {
-                @Override
-                public void run() {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                result.append('3');
-                                result.append(req.isAsyncStarted());
-                                Thread.sleep(THREAD_SLEEP_TIME);
-                                result.append('4');
-                                result.append(req.isAsyncStarted());
-                                resp.setContentType("text/plain");
-                                resp.getWriter().print("OK");
-                                req.getAsyncContext().complete();
-                                result.append('5');
-                                result.append(req.isAsyncStarted());
-                                done = true;
-                            } catch (InterruptedException e) {
-                                result.append(e);
-                            } catch (IOException e) {
-                                result.append(e);
-                            }
-                        }
-                    });
-                    t.start();
-                }
+            req.getAsyncContext().start(() -> {
+                Thread t = new Thread(() -> {
+                    try {
+                        result.append('3');
+                        result.append(req.isAsyncStarted());
+                        Thread.sleep(THREAD_SLEEP_TIME);
+                        result.append('4');
+                        result.append(req.isAsyncStarted());
+                        resp.setContentType("text/plain");
+                        resp.getWriter().print("OK");
+                        req.getAsyncContext().complete();
+                        result.append('5');
+                        result.append(req.isAsyncStarted());
+                        done = true;
+                    } catch (InterruptedException e) {
+                        result.append(e);
+                    } catch (IOException e) {
+                        result.append(e);
+                    }
+                });
+                t.start();
             });
             // Pointless method call so there is somewhere to put a break point
             // when debugging
@@ -716,15 +707,12 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             if (trackingListener != null) {
                 ctxt.addListener(trackingListener);
             }
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    if (iter > 0) {
-                        ctxt.dispatch("/stage1?" + ITER_PARAM + "=" + iter +
-                                "&" + DISPATCH_CHECK + "=y");
-                    } else {
-                        ctxt.dispatch("/stage2");
-                    }
+            Runnable run = () -> {
+                if (iter > 0) {
+                    ctxt.dispatch("/stage1?" + ITER_PARAM + "=" + iter +
+                            "&" + DISPATCH_CHECK + "=y");
+                } else {
+                    ctxt.dispatch("/stage2");
                 }
             };
             if ("y".equals(req.getParameter("useThread"))) {
@@ -821,14 +809,11 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             ctxt.addListener(listener);
             ctxt.setTimeout(3000);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    if (first) {
-                        ctxt.dispatch("/stage1");
-                    } else {
-                        ctxt.dispatch("/stage2");
-                    }
+            Runnable run = () -> {
+                if (first) {
+                    ctxt.dispatch("/stage1");
+                } else {
+                    ctxt.dispatch("/stage2");
                 }
             };
             if ("y".equals(req.getParameter("useThread"))) {
@@ -1127,17 +1112,13 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
 
             asyncContext.addListener(new TrackingListener(false, false, null));
 
-            asyncContext.start(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(THREAD_SLEEP_TIME);
-                        TestAsyncContextImpl.track("Runnable-");
-                        asyncContext.complete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            asyncContext.start(() -> {
+                try {
+                    Thread.sleep(THREAD_SLEEP_TIME);
+                    TestAsyncContextImpl.track("Runnable-");
+                    asyncContext.complete();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
         }
@@ -1189,19 +1170,16 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
                 final HttpServletResponse resp)
                 throws ServletException, IOException {
             final AsyncContext ctx = req.startAsync();
-            ctx.start(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(THREAD_SLEEP_TIME);
-                        resp.setHeader("A", "xyz");
-                        resp.setContentType("text/plain");
-                        resp.setContentLength("OK".getBytes().length);
-                        resp.getWriter().print("OK");
-                        ctx.complete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            ctx.start(() -> {
+                try {
+                    Thread.sleep(THREAD_SLEEP_TIME);
+                    resp.setHeader("A", "xyz");
+                    resp.setContentType("text/plain");
+                    resp.setContentLength("OK".getBytes().length);
+                    resp.getWriter().print("OK");
+                    ctx.complete();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
         }
@@ -1419,15 +1397,12 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             final AsyncContext actxt = req.startAsync();
             actxt.setTimeout(TIMEOUT);
             if (threaded) {
-                actxt.start(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            resp.sendError(status, ERROR_MESSAGE);
-                            actxt.complete();
-                        } catch (IOException e) {
-                            // Ignore
-                        }
+                actxt.start(() -> {
+                    try {
+                        resp.sendError(status, ERROR_MESSAGE);
+                        actxt.complete();
+                    } catch (IOException e) {
+                        // Ignore
                     }
                 });
             } else {
@@ -1493,12 +1468,8 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             async.setTimeout(100000);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    async.dispatch("/ServletC");
-                }
+            executor.submit(() -> {
+                async.dispatch("/ServletC");
             });
             executor.shutdown();
         }
@@ -1564,14 +1535,10 @@ public class TestAsyncContextImpl extends TomcatBaseTest {
             // Should be async at this point
             isAsyncWhenExpected = isAsyncWhenExpected && req.isAsyncStarted();
 
-            async.start(new Runnable() {
-
-                @Override
-                public void run() {
-                    // This should be delayed until the original container
-                    // thread exists
-                    async.dispatch("/ServletB");
-                }
+            async.start(() -> {
+                // This should be delayed until the original container
+                // thread exists
+                async.dispatch("/ServletB");
             });
 
             try {

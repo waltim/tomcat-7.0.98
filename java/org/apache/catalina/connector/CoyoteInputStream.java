@@ -83,15 +83,9 @@ public class CoyoteInputStream
 
             try{
                 Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer = Integer.valueOf(ib.readByte());
-                                return integer;
-                            }
-
+                    AccessController.doPrivileged((PrivilegedExceptionAction<Integer>) () -> {
+                        Integer integer = Integer.valueOf(ib.readByte());
+                        return integer;
                 });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
@@ -113,15 +107,9 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer = Integer.valueOf(ib.available());
-                                return integer;
-                            }
-
+                    AccessController.doPrivileged((PrivilegedExceptionAction<Integer>) () -> {
+                        Integer integer = Integer.valueOf(ib.available());
+                        return integer;
                 });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
@@ -143,16 +131,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer =
-                                    Integer.valueOf(ib.read(b, 0, b.length));
-                                return integer;
-                            }
-
+                    AccessController.doPrivileged((PrivilegedExceptionAction<Integer>) () -> {
+                        Integer integer =
+                                Integer.valueOf(ib.read(b, 0, b.length));
+                        return integer;
                 });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
@@ -176,16 +158,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer =
-                                    Integer.valueOf(ib.read(b, off, len));
-                                return integer;
-                            }
-
+                    AccessController.doPrivileged((PrivilegedExceptionAction<Integer>) () -> {
+                        Integer integer =
+                                Integer.valueOf(ib.read(b, off, len));
+                        return integer;
                 });
                 return result.intValue();
             } catch(PrivilegedActionException pae){
@@ -218,15 +194,9 @@ public class CoyoteInputStream
 
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
-                AccessController.doPrivileged(
-                    new PrivilegedExceptionAction<Void>(){
-
-                        @Override
-                        public Void run() throws IOException{
-                            ib.close();
-                            return null;
-                        }
-
+                AccessController.doPrivileged((PrivilegedExceptionAction<Void>) () -> {
+                    ib.close();
+                    return null;
                 });
             } catch(PrivilegedActionException pae){
                 Exception e = pae.getException();

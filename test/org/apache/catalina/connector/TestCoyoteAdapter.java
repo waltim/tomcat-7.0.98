@@ -350,34 +350,30 @@ public class TestCoyoteAdapter extends TomcatBaseTest {
             final AsyncContext asyncCtxt = req.startAsync();
             asyncCtxt.setTimeout(3000);
 
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    for (int i = 0; i < 20; i++) {
+            t = new Thread(() -> {
+                for (int i = 0; i < 20; i++) {
+                    try {
+                        // Some tests depend on this write failing (e.g.
+                        // because the client has gone away). In some cases
+                        // there may be a large (ish) buffer to fill before
+                        // the write fails.
+                        for (int j = 0 ; j < 8; j++) {
+                            os.write(BYTES_8K);
+                        }
+                        os.flush();
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        log.info("Exception caught " + e);
                         try {
-                            // Some tests depend on this write failing (e.g.
-                            // because the client has gone away). In some cases
-                            // there may be a large (ish) buffer to fill before
-                            // the write fails.
-                            for (int j = 0 ; j < 8; j++) {
-                                os.write(BYTES_8K);
-                            }
-                            os.flush();
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-                            log.info("Exception caught " + e);
-                            try {
-                                // Note if request times out before this
-                                // exception is thrown and the complete call
-                                // below is made, the complete call below will
-                                // fail since the timeout will have completed
-                                // the request.
-                                asyncCtxt.complete();
-                                break;
-                            } finally {
-                                completed = true;
-                            }
+                            // Note if request times out before this
+                            // exception is thrown and the complete call
+                            // below is made, the complete call below will
+                            // fail since the timeout will have completed
+                            // the request.
+                            asyncCtxt.complete();
+                            break;
+                        } finally {
+                            completed = true;
                         }
                     }
                 }

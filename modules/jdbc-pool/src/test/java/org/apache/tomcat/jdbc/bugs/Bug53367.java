@@ -76,21 +76,18 @@ public class Bug53367 {
         final CountDownLatch toCloseLatch = new CountDownLatch(1);
 
         for (int i = 0; i < threadsCount; i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Connection connection = ds.getConnection();
-                        openedLatch.countDown();
-
-                        toCloseLatch.await();
-                        connection.close();
-
-                        closedLatch.countDown();
-
-                    } catch (Exception e) {
-                        System.err.println("Step 1:"+e.getMessage());
-                    }
+            new Thread(() -> {
+                try {
+                    Connection connection = ds.getConnection();
+                    openedLatch.countDown();
+                    
+                    toCloseLatch.await();
+                    connection.close();
+                    
+                    closedLatch.countDown();
+                    
+                } catch (Exception e) {
+                    System.err.println("Step 1:"+e.getMessage());
                 }
             }).start();
         }
@@ -104,14 +101,11 @@ public class Bug53367 {
 
         List<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < threadsCount; i++) {
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ds.getConnection();
-                    } catch (Exception e) {
-                        System.err.println("Step 2:"+e.getMessage());
-                    }
+            Thread thread = new Thread(() -> {
+                try {
+                    ds.getConnection();
+                } catch (Exception e) {
+                    System.err.println("Step 2:"+e.getMessage());
                 }
             });
             thread.start();
@@ -141,18 +135,15 @@ public class Bug53367 {
         final ArrayBlockingQueue<Connection> cons = new ArrayBlockingQueue<Connection>(threadsCount);
         threads.clear();
         for (int i = 0; i < threadsCount; i++) {
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        cons.add(ds.getConnection());
-                    } catch (PoolExhaustedException e) {
-                        failedCount.incrementAndGet();
-                        System.err.println("Step 3:"+e.getMessage());
-                    } catch (Exception e) {
-                        System.err.println("Step 4:"+e.getMessage());
-                        throw new RuntimeException(e);
-                    }
+            Thread thread = new Thread(() -> {
+                try {
+                    cons.add(ds.getConnection());
+                } catch (PoolExhaustedException e) {
+                    failedCount.incrementAndGet();
+                    System.err.println("Step 3:"+e.getMessage());
+                } catch (Exception e) {
+                    System.err.println("Step 4:"+e.getMessage());
+                    throw new RuntimeException(e);
                 }
             });
             thread.start();

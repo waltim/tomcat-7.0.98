@@ -108,11 +108,8 @@ public class TestSsl extends TomcatBaseTest {
         SSLSocketFactory socketFactory = sslCtx.getSocketFactory();
         SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", getPort());
 
-        socket.addHandshakeCompletedListener(new HandshakeCompletedListener() {
-            @Override
-            public void handshakeCompleted(HandshakeCompletedEvent event) {
-                handshakeDone = true;
-            }
+        socket.addHandshakeCompletedListener((HandshakeCompletedEvent event) -> {
+            handshakeDone = true;
         });
 
         OutputStream os = socket.getOutputStream();

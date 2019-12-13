@@ -100,17 +100,14 @@ public class TestOrderInterceptor {
         final Member[] dest = channels[0].getMembers();
         final AtomicInteger value = new AtomicInteger(0);
         final Queue<Exception> exceptionQueue = new ConcurrentLinkedQueue<Exception>();
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100; i++) {
-                    try {
-                        synchronized (channels[0]) {
-                            channels[0].send(dest, Integer.valueOf(value.getAndAdd(1)), 0);
-                        }
-                    }catch ( Exception x ) {
-                        exceptionQueue.add(x);
+        Runnable run = () -> {
+            for (int i = 0; i < 100; i++) {
+                try {
+                    synchronized (channels[0]) {
+                        channels[0].send(dest, Integer.valueOf(value.getAndAdd(1)), 0);
                     }
+                }catch ( Exception x ) {
+                    exceptionQueue.add(x);
                 }
             }
         };

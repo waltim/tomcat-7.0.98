@@ -58,14 +58,7 @@ public final class ExpressionBuilder implements NodeVisitor {
         if (System.getSecurityManager() == null) {
             cacheSizeStr = System.getProperty(CACHE_SIZE_PROP, "5000");
         } else {
-            cacheSizeStr = AccessController.doPrivileged(
-                    new PrivilegedAction<String>() {
-
-                    @Override
-                    public String run() {
-                        return System.getProperty(CACHE_SIZE_PROP, "5000");
-                    }
-                });
+            cacheSizeStr = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(CACHE_SIZE_PROP, "5000"));
         }
         CACHE_SIZE = Integer.parseInt(cacheSizeStr);
     }

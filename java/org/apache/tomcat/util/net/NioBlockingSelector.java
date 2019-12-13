@@ -219,12 +219,7 @@ public class NioBlockingSelector {
         public void disable() { run = false; selector.wakeup();}
         protected AtomicInteger wakeupCounter = new AtomicInteger(0);
         public void cancelKey(final SelectionKey key) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    key.cancel();
-                }
-            };
+            Runnable r = key::cancel;
             events.offer(r);
             wakeup();
         }
@@ -243,29 +238,26 @@ public class NioBlockingSelector {
         }
 
         public void add(final KeyAttachment key, final int ops, final KeyReference ref) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    if ( key == null ) return;
-                    NioChannel nch = key.getChannel();
-                    if ( nch == null ) return;
-                    SocketChannel ch = nch.getIOChannel();
-                    if ( ch == null ) return;
-                    SelectionKey sk = ch.keyFor(selector);
-                    try {
-                        if (sk == null) {
-                            sk = ch.register(selector, ops, key);
-                            ref.key = sk;
-                        } else if (!sk.isValid()) {
-                            cancel(sk,key,ops);
-                        } else {
-                            sk.interestOps(sk.interestOps() | ops);
-                        }
-                    }catch (CancelledKeyException cx) {
+            Runnable r = () -> {
+                if ( key == null ) return;
+                NioChannel nch = key.getChannel();
+                if ( nch == null ) return;
+                SocketChannel ch = nch.getIOChannel();
+                if ( ch == null ) return;
+                SelectionKey sk = ch.keyFor(selector);
+                try {
+                    if (sk == null) {
+                        sk = ch.register(selector, ops, key);
+                        ref.key = sk;
+                    } else if (!sk.isValid()) {
                         cancel(sk,key,ops);
-                    }catch (ClosedChannelException cx) {
-                        cancel(sk,key,ops);
+                    } else {
+                        sk.interestOps(sk.interestOps() | ops);
                     }
+                }catch (CancelledKeyException cx) {
+                    cancel(sk,key,ops);
+                }catch (ClosedChannelException cx) {
+                    cancel(sk,key,ops);
                 }
             };
             events.offer(r);
@@ -273,38 +265,35 @@ public class NioBlockingSelector {
         }
 
         public void remove(final KeyAttachment key, final int ops) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    if ( key == null ) return;
-                    NioChannel nch = key.getChannel();
-                    if ( nch == null ) return;
-                    SocketChannel ch = nch.getIOChannel();
-                    if ( ch == null ) return;
-                    SelectionKey sk = ch.keyFor(selector);
-                    try {
-                        if (sk == null) {
+            Runnable r = () -> {
+                if ( key == null ) return;
+                NioChannel nch = key.getChannel();
+                if ( nch == null ) return;
+                SocketChannel ch = nch.getIOChannel();
+                if ( ch == null ) return;
+                SelectionKey sk = ch.keyFor(selector);
+                try {
+                    if (sk == null) {
+                        if (SelectionKey.OP_WRITE==(ops&SelectionKey.OP_WRITE)) countDown(key.getWriteLatch());
+                        if (SelectionKey.OP_READ==(ops&SelectionKey.OP_READ))countDown(key.getReadLatch());
+                    } else {
+                        if (sk.isValid()) {
+                            sk.interestOps(sk.interestOps() & (~ops));
                             if (SelectionKey.OP_WRITE==(ops&SelectionKey.OP_WRITE)) countDown(key.getWriteLatch());
                             if (SelectionKey.OP_READ==(ops&SelectionKey.OP_READ))countDown(key.getReadLatch());
-                        } else {
-                            if (sk.isValid()) {
-                                sk.interestOps(sk.interestOps() & (~ops));
-                                if (SelectionKey.OP_WRITE==(ops&SelectionKey.OP_WRITE)) countDown(key.getWriteLatch());
-                                if (SelectionKey.OP_READ==(ops&SelectionKey.OP_READ))countDown(key.getReadLatch());
-                                if (sk.interestOps()==0) {
-                                    sk.cancel();
-                                    sk.attach(null);
-                                }
-                            }else {
+                            if (sk.interestOps()==0) {
                                 sk.cancel();
                                 sk.attach(null);
                             }
-                        }
-                    }catch (CancelledKeyException cx) {
-                        if (sk!=null) {
+                        }else {
                             sk.cancel();
                             sk.attach(null);
                         }
+                    }
+                }catch (CancelledKeyException cx) {
+                    if (sk!=null) {
+                        sk.cancel();
+                        sk.attach(null);
                     }
                 }
             };

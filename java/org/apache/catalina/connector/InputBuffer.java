@@ -546,16 +546,7 @@ public class InputBuffer extends Reader
         if (conv == null) {
             if (SecurityUtil.isPackageProtectionEnabled()){
                 try{
-                    conv = AccessController.doPrivileged(
-                            new PrivilegedExceptionAction<B2CConverter>(){
-
-                                @Override
-                                public B2CConverter run() throws IOException {
-                                    return new B2CConverter(enc);
-                                }
-
-                            }
-                    );
+                    conv = AccessController.doPrivileged((PrivilegedExceptionAction<B2CConverter>) () -> new B2CConverter(enc));
                 } catch (PrivilegedActionException ex){
                     Exception e = ex.getException();
                     if (e instanceof IOException) {

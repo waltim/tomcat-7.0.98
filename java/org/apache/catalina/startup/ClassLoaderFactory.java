@@ -127,16 +127,12 @@ public final class ClassLoaderFactory {
 
         // Construct the class loader itself
         final URL[] array = set.toArray(new URL[set.size()]);
-        return AccessController.doPrivileged(
-                new PrivilegedAction<URLClassLoader>() {
-                    @Override
-                    public URLClassLoader run() {
-                        if (parent == null)
-                            return new URLClassLoader(array);
-                        else
-                            return new URLClassLoader(array, parent);
-                    }
-                });
+        return AccessController.doPrivileged((PrivilegedAction<URLClassLoader>) () -> {
+            if (parent == null)
+                return new URLClassLoader(array);
+            else
+                return new URLClassLoader(array, parent);
+        });
     }
 
 
@@ -228,16 +224,12 @@ public final class ClassLoaderFactory {
                 log.debug("  location " + i + " is " + array[i]);
             }
 
-        return AccessController.doPrivileged(
-                new PrivilegedAction<URLClassLoader>() {
-                    @Override
-                    public URLClassLoader run() {
-                        if (parent == null)
-                            return new URLClassLoader(array);
-                        else
-                            return new URLClassLoader(array, parent);
-                    }
-                });
+        return AccessController.doPrivileged((PrivilegedAction<URLClassLoader>) () -> {
+            if (parent == null)
+                return new URLClassLoader(array);
+            else
+                return new URLClassLoader(array, parent);
+        });
     }
 
     private static boolean validateFile(File file,

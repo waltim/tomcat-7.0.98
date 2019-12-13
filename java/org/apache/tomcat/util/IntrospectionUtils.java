@@ -660,14 +660,11 @@ public final class IntrospectionUtils {
         String[] names = null;
         final String lext = ext;
         if (dir.isDirectory()) {
-            names = dir.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File d, String name) {
-                    if (name.endsWith(lext)) {
-                        return true;
-                    }
-                    return false;
+            names = dir.list((File d, String name) -> {
+                if (name.endsWith(lext)) {
+                    return true;
                 }
+                return false;
             });
         }
         return names;

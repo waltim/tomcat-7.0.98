@@ -602,13 +602,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
         if (facade == null){
             if (SecurityUtil.isPackageProtectionEnabled()){
                 final StandardSession fsession = this;
-                facade = AccessController.doPrivileged(
-                        new PrivilegedAction<StandardSessionFacade>(){
-                    @Override
-                    public StandardSessionFacade run(){
-                        return new StandardSessionFacade(fsession);
-                    }
-                });
+                facade = AccessController.doPrivileged((PrivilegedAction<StandardSessionFacade>) () -> new StandardSessionFacade(fsession));
             } else {
                 facade = new StandardSessionFacade(this);
             }
