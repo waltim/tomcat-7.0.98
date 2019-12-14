@@ -44,7 +44,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ApplicationJspPropertyGroupDescriptor;
 import org.apache.catalina.core.ApplicationTaglibDescriptor;
 import org.apache.tomcat.util.descriptor.XmlIdentifiers;
-import org.apache.tomcat.util.res.StringManager;
+import org.apache.tomcat.util.res.StringManager;import java.util.stream.Collectors;
 
 /**
  * Representation of common elements of web.xml and web-fragment.xml. Provides
@@ -1613,12 +1613,7 @@ public class WebXml {
         // override those in annotations
         List<FilterMap> filterMapsToAdd = new ArrayList<FilterMap>();
         for (WebXml fragment : fragments) {
-            for (FilterMap filterMap : fragment.getFilterMappings()) {
-                if (!filterMappingNames.contains(filterMap.getFilterName())) {
-                    filterMapsToAdd.add(filterMap);
-                }
-            }
-        }
+            filterMapsToAdd  = fragment.getFilterMappings().stream().filter(filterMap -> !filterMappingNames.contains(filterMap.getFilterName())).collect(Collectors.toList());}
         for (FilterMap filterMap : filterMapsToAdd) {
             // Additive
             addFilterMapping(filterMap);
@@ -1763,14 +1758,8 @@ public class WebXml {
         List<Map.Entry<String,String>> servletMappingsToAdd =
             new ArrayList<Map.Entry<String,String>>();
         for (WebXml fragment : fragments) {
-            for (Map.Entry<String,String> servletMap :
-                    fragment.getServletMappings().entrySet()) {
-                if (!servletMappingNames.contains(servletMap.getValue()) &&
-                        !servletMappings.containsKey(servletMap.getKey())) {
-                    servletMappingsToAdd.add(servletMap);
-                }
-            }
-        }
+            servletMappingsToAdd  = fragment.getServletMappings().entrySet().stream().filter(servletMap -> !servletMappingNames.contains(servletMap.getValue()) &&
+                        !servletMappings.containsKey(servletMap.getKey())).collect(Collectors.toList());}
 
         // Add fragment mappings
         for (Map.Entry<String,String> mapping : servletMappingsToAdd) {
