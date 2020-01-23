@@ -851,13 +851,13 @@ public final class HTMLManagerServlet extends ManagerServlet {
             Set<String> sessionIds =
                 ((DistributedManager) manager).getSessionIdsFull();
             // Remove active (primary and backup) session IDs from full list
-            for (Session session : sessions) {
+            sessions.forEach((session) -> {
                 sessionIds.remove(session.getId());
-            }
+            });
             // Left with just proxy sessions - add them
-            for (String sessionId : sessionIds) {
+            sessionIds.forEach((sessionId) -> {
                 sessions.add(new DummyProxySession(sessionId));
-            }
+            });
         }
         return sessions;
     }

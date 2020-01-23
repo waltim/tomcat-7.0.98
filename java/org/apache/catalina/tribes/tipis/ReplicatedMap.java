@@ -189,9 +189,7 @@ public class ReplicatedMap<K,V> extends AbstractReplicatedMap<K,V> {
         if (log.isInfoEnabled())
             log.info(sm.getString("replicatedMap.member.disappeared", member));
         long start = System.currentTimeMillis();
-        for (Entry<K, MapEntry<K, V>> e : innerMap.entrySet()) {
-            MapEntry<K,V> entry = innerMap.get(e.getKey());
-            if (entry==null) continue;
+        innerMap.entrySet().stream().map((e) -> innerMap.get(e.getKey())).filter((entry) -> !(entry==null)).map((entry) -> {
             if (entry.isPrimary()) {
                 try {
                     Member[] backup = getMapMembers();
@@ -208,32 +206,30 @@ public class ReplicatedMap<K,V> extends AbstractReplicatedMap<K,V> {
             } else if (member.equals(entry.getPrimary())) {
                 entry.setPrimary(null);
             }
-
-            if ( entry.getPrimary() == null &&
-                        entry.isCopy() &&
-                        entry.getBackupNodes()!=null &&
-                        entry.getBackupNodes().length > 0 &&
-                        entry.getBackupNodes()[0].equals(channel.getLocalMember(false)) ) {
-                try {
-                    entry.setPrimary(channel.getLocalMember(false));
-                    entry.setBackup(false);
-                    entry.setProxy(false);
-                    entry.setCopy(false);
-                    Member[] backup = getMapMembers();
-                    if (backup.length > 0) {
-                        MapMessage msg = new MapMessage(getMapContextName(), MapMessage.MSG_NOTIFY_MAPMEMBER,false,
-                                (Serializable)entry.getKey(),null,null,channel.getLocalMember(false),backup);
-                        getChannel().send(backup, msg, getChannelSendOptions());
+            return entry;
+        }).filter((entry) -> ( entry.getPrimary() == null &&
+                entry.isCopy() &&
+                entry.getBackupNodes()!=null &&
+                entry.getBackupNodes().length > 0 &&
+                entry.getBackupNodes()[0].equals(channel.getLocalMember(false)) )).forEachOrdered((entry) -> {
+                    try {
+                        entry.setPrimary(channel.getLocalMember(false));
+                        entry.setBackup(false);
+                        entry.setProxy(false);
+                        entry.setCopy(false);
+                        Member[] backup = getMapMembers();
+                        if (backup.length > 0) {
+                            MapMessage msg = new MapMessage(getMapContextName(), MapMessage.MSG_NOTIFY_MAPMEMBER,false,
+                                    (Serializable)entry.getKey(),null,null,channel.getLocalMember(false),backup);
+                            getChannel().send(backup, msg, getChannelSendOptions());
+                        }
+                        entry.setBackupNodes(backup);
+                        if ( mapOwner!=null ) mapOwner.objectMadePrimay(entry.getKey(),entry.getValue());
+                        
+                    } catch (ChannelException x) {
+                        log.error(sm.getString("replicatedMap.unable.relocate", entry.getKey()), x);
                     }
-                    entry.setBackupNodes(backup);
-                    if ( mapOwner!=null ) mapOwner.objectMadePrimay(entry.getKey(),entry.getValue());
-
-                } catch (ChannelException x) {
-                    log.error(sm.getString("replicatedMap.unable.relocate", entry.getKey()), x);
-                }
-            }
-
-        } //while
+        }); //while
         long complete = System.currentTimeMillis() - start;
         if (log.isInfoEnabled()) log.info(sm.getString("replicatedMap.relocate.complete",
                 Long.toString(complete)));
@@ -252,13 +248,9 @@ public class ReplicatedMap<K,V> extends AbstractReplicatedMap<K,V> {
         if ( memberAdded ) {
             synchronized (stateMutex) {
                 Member[] backup = getMapMembers();
-                for (Entry<K, MapEntry<K, V>> e : innerMap.entrySet()) {
-                    MapEntry<K,V> entry = innerMap.get(e.getKey());
-                    if ( entry == null ) continue;
-                    if (entry.isPrimary() && !inSet(member,entry.getBackupNodes())) {
-                        entry.setBackupNodes(backup);
-                    }
-                }
+                innerMap.entrySet().stream().map((e) -> innerMap.get(e.getKey())).filter((entry) -> !( entry == null )).filter((entry) -> (entry.isPrimary() && !inSet(member,entry.getBackupNodes()))).forEachOrdered((entry) -> {
+                    entry.setBackupNodes(backup);
+                });
             }
         }
     }

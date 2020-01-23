@@ -76,13 +76,7 @@ public class TestPersistentManager {
         final AtomicInteger sessionExpireCounter = new AtomicInteger();
 
         Store mockStore = EasyMock.createNiceMock(Store.class);
-        EasyMock.expect(mockStore.load(EasyMock.anyString())).andAnswer(new IAnswer<Session>() {
-
-            @Override
-            public Session answer() throws Throwable {
-                return timedOutSession(manager, sessionExpireCounter);
-            }
-        }).anyTimes();
+        EasyMock.expect(mockStore.load(EasyMock.anyString())).andAnswer(() -> timedOutSession(manager, sessionExpireCounter)).anyTimes();
 
         EasyMock.replay(mockStore);
 

@@ -1525,9 +1525,9 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
         ContainerEvent event = new ContainerEvent(this, type, data);
         // Note for each uses an iterator internally so this is safe
-        for (ContainerListener listener : listeners) {
+        listeners.forEach((listener) -> {
             listener.containerEvent(event);
-        }
+        });
     }
 
 

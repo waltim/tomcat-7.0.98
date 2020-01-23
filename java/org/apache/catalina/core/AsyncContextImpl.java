@@ -120,7 +120,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
             } else {
                 Thread.currentThread().setContextClassLoader(newCL);
             }
-            for (AsyncListenerWrapper listener : listenersCopy) {
+            listenersCopy.forEach((listener) -> {
                 try {
                     listener.fireOnComplete(event);
                 } catch (Throwable t) {
@@ -128,7 +128,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                     log.warn(sm.getString("asyncContextImpl.onCompleteError",
                             listener.getClass().getName()), t);
                 }
-            }
+            });
         } finally {
             context.fireRequestDestroyEvent(request.getRequest());
             clearServletRequestResponse();
@@ -159,7 +159,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                 List<AsyncListenerWrapper> listenersCopy =
                     new ArrayList<AsyncListenerWrapper>();
                 listenersCopy.addAll(listeners);
-                for (AsyncListenerWrapper listener : listenersCopy) {
+                listenersCopy.forEach((listener) -> {
                     try {
                         listener.fireOnTimeout(event);
                     } catch (Throwable t) {
@@ -167,7 +167,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                         log.warn(sm.getString("asyncContextImpl.onTimeoutError",
                                 listener.getClass().getName()), t);
                     }
-                }
+                });
                 request.getCoyoteRequest().action(
                         ActionCode.ASYNC_IS_TIMINGOUT, result);
             } finally {
@@ -374,7 +374,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
             if (log.isDebugEnabled()) {
                 log.debug(sm.getString("asyncContextImpl.fireOnStartAsync"));
             }
-            for (AsyncListenerWrapper listener : listenersCopy) {
+            listenersCopy.forEach((listener) -> {
                 try {
                     listener.fireOnStartAsync(event);
                 } catch (Throwable t) {
@@ -382,7 +382,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                     log.warn(sm.getString("asyncContextImpl.onStartAsyncError",
                             listener.getClass().getName()), t);
                 }
-            }
+            });
         }
     }
 
@@ -455,7 +455,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                     event.getSuppliedRequest(), event.getSuppliedResponse(), t);
             List<AsyncListenerWrapper> listenersCopy = new ArrayList<AsyncListenerWrapper>();
             listenersCopy.addAll(listeners);
-            for (AsyncListenerWrapper listener : listenersCopy) {
+            listenersCopy.forEach((listener) -> {
                 try {
                     listener.fireOnError(errorEvent);
                 } catch (Throwable t2) {
@@ -463,7 +463,7 @@ public class AsyncContextImpl implements AsyncContext, AsyncContextCallback {
                     log.warn(sm.getString("asyncContextImpl.onErrorError",
                             listener.getClass().getName()), t2);
                 }
-            }
+            });
         }
 
 

@@ -233,15 +233,15 @@ public class VirtualDirContext extends FileDirContext {
 
         if (mappedResourcePaths != null && !mappedResourcePaths.isEmpty()) {
             Set<String> entryNames = new HashSet<String>(entries.size());
-            for (NamingEntry entry : entries) {
+            entries.forEach((entry) -> {
                 entryNames.add(entry.name);
-            }
+            });
             // Add appropriate entries from the extra resource paths
             String absPath = file.getAbsolutePath();
             if (absPath.startsWith(getDocBase() + File.separator)) {
                 String relPath = absPath.substring(getDocBase().length());
                 String fsRelPath = relPath.replace(File.separatorChar, '/');
-                for (Map.Entry<String, List<String>> mapping : mappedResourcePaths.entrySet()) {
+                mappedResourcePaths.entrySet().forEach((mapping) -> {
                     String path = mapping.getKey();
                     List<String> dirList = mapping.getValue();
                     String res = null;
@@ -256,18 +256,17 @@ public class VirtualDirContext extends FileDirContext {
                             f = validate(f, res, true, resourcesDir);
                             if (f != null && f.isDirectory()) {
                                 List<NamingEntry> virtEntries = super.list(f);
-                                for (NamingEntry entry : virtEntries) {
-                                    // filter duplicate
-                                    if (!entryNames.contains(entry.name)) {
-                                        entryNames.add(entry.name);
-                                        entries.add(entry);
-                                    }
-                                }
-
+                                // filter duplicate
+                                virtEntries.stream().filter((entry) -> (!entryNames.contains(entry.name))).map((entry) -> {
+                                    entryNames.add(entry.name);
+                                    return entry;
+                                }).forEachOrdered((entry) -> {
+                                    entries.add(entry);
+                                });
                             }
                         }
                     }
-                }
+                });
             }
         }
 

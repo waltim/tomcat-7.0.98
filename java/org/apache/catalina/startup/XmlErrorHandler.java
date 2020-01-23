@@ -69,13 +69,13 @@ public class XmlErrorHandler implements ErrorHandler {
     }
 
     public void logFindings(Log log, String source) {
-        for (SAXParseException e : getWarnings()) {
+        getWarnings().forEach((e) -> {
             log.warn(sm.getString(
                     "xmlErrorHandler.warning", e.getMessage(), source));
-        }
-        for (SAXParseException e : getErrors()) {
+        });
+        getErrors().forEach((e) -> {
             log.warn(sm.getString(
                     "xmlErrorHandler.error", e.getMessage(), source));
-        }
+        });
     }
 }

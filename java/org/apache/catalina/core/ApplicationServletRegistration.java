@@ -103,23 +103,23 @@ public class ApplicationServletRegistration
 
         Set<String> conflicts = new HashSet<String>();
 
-        for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+        initParameters.entrySet().stream().map((entry) -> {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new IllegalArgumentException(sm.getString(
                         "applicationFilterRegistration.nullInitParams",
-                                entry.getKey(), entry.getValue()));
+                        entry.getKey(), entry.getValue()));
             }
-            if (getInitParameter(entry.getKey()) != null) {
-                conflicts.add(entry.getKey());
-            }
-        }
+            return entry;
+        }).filter((entry) -> (getInitParameter(entry.getKey()) != null)).forEachOrdered((entry) -> {
+            conflicts.add(entry.getKey());
+        });
 
         // Have to add in a separate loop since spec requires no updates at all
         // if there is an issue
         if (conflicts.isEmpty()) {
-            for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+            initParameters.entrySet().forEach((entry) -> {
                 setInitParameter(entry.getKey(), entry.getValue());
-            }
+            });
         }
 
         return conflicts;

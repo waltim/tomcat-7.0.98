@@ -61,9 +61,9 @@ public class ApplicationFilterRegistration
         filterMap.setFilterName(filterDef.getFilterName());
 
         if (dispatcherTypes != null) {
-            for (DispatcherType dispatcherType : dispatcherTypes) {
+            dispatcherTypes.forEach((dispatcherType) -> {
                 filterMap.setDispatcher(dispatcherType.name());
-            }
+            });
         }
 
         if (servletNames != null) {
@@ -90,9 +90,9 @@ public class ApplicationFilterRegistration
         filterMap.setFilterName(filterDef.getFilterName());
 
         if (dispatcherTypes != null) {
-            for (DispatcherType dispatcherType : dispatcherTypes) {
+            dispatcherTypes.forEach((dispatcherType) -> {
                 filterMap.setDispatcher(dispatcherType.name());
-            }
+            });
         }
 
         if (urlPatterns != null) {
@@ -186,22 +186,21 @@ public class ApplicationFilterRegistration
 
         Set<String> conflicts = new HashSet<String>();
 
-        for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+        initParameters.entrySet().stream().map((entry) -> {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new IllegalArgumentException(sm.getString(
                         "applicationFilterRegistration.nullInitParams",
-                                entry.getKey(), entry.getValue()));
+                        entry.getKey(), entry.getValue()));
             }
-            if (getInitParameter(entry.getKey()) != null) {
-                conflicts.add(entry.getKey());
-            }
-        }
-
+            return entry;
+        }).filter((entry) -> (getInitParameter(entry.getKey()) != null)).forEachOrdered((entry) -> {
+            conflicts.add(entry.getKey());
+        });
         // Have to add in a separate loop since spec requires no updates at all
         // if there is an issue
-        for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+        initParameters.entrySet().forEach((entry) -> {
             setInitParameter(entry.getKey(), entry.getValue());
-        }
+        });
 
         return conflicts;
     }

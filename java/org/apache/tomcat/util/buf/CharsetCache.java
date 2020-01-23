@@ -173,9 +173,9 @@ public class CharsetCache {
 
     private void addToCache(String name, Charset charset) {
         cache.put(name, charset);
-        for (String alias : charset.aliases()) {
+        charset.aliases().forEach((alias) -> {
             cache.put(alias.toLowerCase(Locale.ENGLISH), charset);
-        }
+        });
     }
 
 

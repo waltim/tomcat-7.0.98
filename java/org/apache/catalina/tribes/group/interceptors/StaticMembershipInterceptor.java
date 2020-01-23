@@ -153,18 +153,17 @@ public class StaticMembershipInterceptor extends ChannelInterceptorBase {
         if ( (Channel.SND_RX_SEQ&svc)==Channel.SND_RX_SEQ ) super.start(Channel.SND_RX_SEQ);
         if ( (Channel.SND_TX_SEQ&svc)==Channel.SND_TX_SEQ ) super.start(Channel.SND_TX_SEQ);
         final ChannelInterceptorBase base = this;
-        for (final Member member : members) {
-            Thread t = new Thread() {
-                @Override
-                public void run() {
-                    base.memberAdded(member);
-                    if (getfirstInterceptor().getMember(member) != null) {
-                        sendLocalMember(new Member[]{member});
-                    }
+        members.stream().map((member) -> new Thread() {
+            @Override
+            public void run() {
+                base.memberAdded(member);
+                if (getfirstInterceptor().getMember(member) != null) {
+                    sendLocalMember(new Member[]{member});
                 }
-            };
+            }
+        }).forEachOrdered((t) -> {
             t.start();
-        }
+        });
         super.start(svc & (~Channel.SND_RX_SEQ) & (~Channel.SND_TX_SEQ));
 
         // check required interceptors

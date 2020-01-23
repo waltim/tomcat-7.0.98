@@ -2066,9 +2066,9 @@ public class JNDIRealm extends RealmBase {
         if (containerLog.isTraceEnabled()) {
             Set<Entry<String, String>> entries = groupMap.entrySet();
             containerLog.trace("  Found " + entries.size() + " direct roles");
-            for (Entry<String, String> entry : entries) {
+            entries.forEach((entry) -> {
                 containerLog.trace(  "  Found direct role " + entry.getKey() + " -> " + entry.getValue());
-            }
+            });
         }
 
         // if nested group search is enabled, perform searches for nested groups until no new group is found
@@ -2605,14 +2605,14 @@ public class JNDIRealm extends RealmBase {
     private DirContext createTlsDirContext(
             Hashtable<String, String> env) throws NamingException {
         Map<String, Object> savedEnv = new HashMap<String, Object>();
-        for (String key : Arrays.asList(Context.SECURITY_AUTHENTICATION,
+        Arrays.asList(Context.SECURITY_AUTHENTICATION,
                 Context.SECURITY_CREDENTIALS, Context.SECURITY_PRINCIPAL,
-                Context.SECURITY_PROTOCOL)) {
-            Object entry = env.remove(key);
+                Context.SECURITY_PROTOCOL).forEach((key) -> {
+                    Object entry = env.remove(key);
             if (entry != null) {
                 savedEnv.put(key, entry);
             }
-        }
+        });
         LdapContext result = null;
         try {
             result = new InitialLdapContext(env, null);

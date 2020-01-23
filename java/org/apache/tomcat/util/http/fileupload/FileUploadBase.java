@@ -311,13 +311,13 @@ public abstract class FileUploadBase {
             throw new FileUploadException(e.getMessage(), e);
         } finally {
             if (!successful) {
-                for (FileItem fileItem : items) {
+                items.forEach((fileItem) -> {
                     try {
                         fileItem.delete();
                     } catch (Exception ignored) {
                         // ignored TODO perhaps add to tracker delete failure list somehow?
                     }
-                }
+                });
             }
         }
     }
@@ -341,7 +341,7 @@ public abstract class FileUploadBase {
         final Map<String, List<FileItem>> itemsMap =
                 new HashMap<String, List<FileItem>>(items.size());
 
-        for (FileItem fileItem : items) {
+        items.forEach((fileItem) -> {
             String fieldName = fileItem.getFieldName();
             List<FileItem> mappedItems = itemsMap.get(fieldName);
 
@@ -351,7 +351,7 @@ public abstract class FileUploadBase {
             }
 
             mappedItems.add(fileItem);
-        }
+        });
 
         return itemsMap;
     }

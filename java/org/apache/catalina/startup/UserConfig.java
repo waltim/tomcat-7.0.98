@@ -326,13 +326,13 @@ public final class UserConfig
             results.add(executor.submit(new DeployUserDirectory(this, user, home)));
         }
 
-        for (Future<?> result : results) {
+        results.forEach((result) -> {
             try {
                 result.get();
             } catch (Exception e) {
                 host.getLogger().error(sm.getString("userConfig.deploy.threaded.error"), e);
             }
-        }
+        });
     }
 
 

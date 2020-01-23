@@ -46,10 +46,8 @@ public final class Matcher {
      */
     public static boolean matchName(Set<String> patternSet, String fileName) {
         char[] fileNameArray = fileName.toCharArray();
-        for (String pattern: patternSet) {
-            if (match(pattern, fileNameArray, true)) {
-                return true;
-            }
+        if (patternSet.stream().anyMatch((pattern) -> (match(pattern, fileNameArray, true)))) {
+            return true;
         }
         return false;
     }

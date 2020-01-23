@@ -128,9 +128,9 @@ public class AprLifecycleListener
         if (Lifecycle.BEFORE_INIT_EVENT.equals(event.getType())) {
             synchronized (lock) {
                 init();
-                for (String msg : initInfoLogMessages) {
+                initInfoLogMessages.forEach((msg) -> {
                     log.info(msg);
-                }
+                });
                 initInfoLogMessages.clear();
                 if (aprAvailable) {
                     try {

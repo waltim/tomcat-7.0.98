@@ -480,13 +480,13 @@ public class Request implements HttpServletRequest {
         sessionParsed = false;
         parametersParsed = false;
         if (parts != null) {
-            for (Part part: parts) {
+            parts.forEach((part) -> {
                 try {
                     part.delete();
                 } catch (IOException ignored) {
                     // ApplicationPart.delete() never throws an IOEx
                 }
-            }
+            });
             parts = null;
         }
         partsParseException = null;
@@ -3495,11 +3495,11 @@ public class Request implements HttpServletRequest {
 
         // Process the quality values in highest->lowest order (due to
         // negating the Double value when creating the key)
-        for (ArrayList<Locale> list : locales.values()) {
-            for (Locale locale : list) {
+        locales.values().forEach((list) -> {
+            list.forEach((locale) -> {
                 addLocale(locale);
-            }
-        }
+            });
+        });
     }
 
 

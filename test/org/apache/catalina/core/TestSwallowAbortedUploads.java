@@ -198,12 +198,14 @@ public class TestSwallowAbortedUploads extends TomcatBaseTest {
                 } else {
                     log.debug("Count: " + c.size());
                     sb.append("Count: " + c.size() + "\n");
-                    for (Part p : c) {
+                    c.stream().map((p) -> {
                         log.debug("Name: " + p.getName() + ", Size: "
                                 + p.getSize());
+                        return p;
+                    }).forEachOrdered((p) -> {
                         sb.append("Name: " + p.getName() + ", Size: "
                                 + p.getSize() + "\n");
-                    }
+                    });
                 }
             } catch (IllegalStateException ex) {
                 log.debug("IllegalStateException during getParts()");

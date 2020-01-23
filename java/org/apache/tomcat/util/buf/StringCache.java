@@ -234,7 +234,7 @@ public class StringCache {
                         // Sort the entries according to occurrence
                         TreeMap<Integer,ArrayList<ByteEntry>> tempMap =
                             new TreeMap<Integer,ArrayList<ByteEntry>>();
-                        for (Entry<ByteEntry,int[]> item : bcStats.entrySet()) {
+                        bcStats.entrySet().forEach((item) -> {
                             ByteEntry entry = item.getKey();
                             int[] countA = item.getValue();
                             Integer count = Integer.valueOf(countA[0]);
@@ -246,7 +246,7 @@ public class StringCache {
                                 tempMap.put(count, list);
                             }
                             list.add(entry);
-                        }
+                        });
                         // Allocate array of the right size
                         int size = bcStats.size();
                         if (size > cacheSize) {
@@ -351,7 +351,7 @@ public class StringCache {
                         // Sort the entries according to occurrence
                         TreeMap<Integer,ArrayList<CharEntry>> tempMap =
                             new TreeMap<Integer,ArrayList<CharEntry>>();
-                        for (Entry<CharEntry,int[]> item : ccStats.entrySet()) {
+                        ccStats.entrySet().forEach((item) -> {
                             CharEntry entry = item.getKey();
                             int[] countA = item.getValue();
                             Integer count = Integer.valueOf(countA[0]);
@@ -363,7 +363,7 @@ public class StringCache {
                                 tempMap.put(count, list);
                             }
                             list.add(entry);
-                        }
+                        });
                         // Allocate array of the right size
                         int size = ccStats.size();
                         if (size > cacheSize) {

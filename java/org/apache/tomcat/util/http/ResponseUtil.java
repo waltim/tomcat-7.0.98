@@ -78,14 +78,13 @@ public class ResponseUtil {
         // makes parsing simpler.
         Set<String> fieldNames = new HashSet<String>();
 
-        for (String varyHeader : varyHeaders) {
-            StringReader input = new StringReader(varyHeader);
+        varyHeaders.stream().map((varyHeader) -> new StringReader(varyHeader)).forEachOrdered((input) -> {
             try {
                 TokenList.parseTokenList(input, fieldNames);
             } catch (IOException ioe) {
                 // Should never happen
             }
-        }
+        });
 
         if (fieldNames.contains(VARY_ALL)) {
             // '*' has been added without removing other values. Optimise.
@@ -98,10 +97,10 @@ public class ResponseUtil {
         fieldNames.add(name);
         StringBuilder varyHeader = new StringBuilder();
         varyHeader.append(name);
-        for (String fieldName : fieldNames) {
+        fieldNames.forEach((fieldName) -> {
             varyHeader.append(',');
             varyHeader.append(fieldName);
-        }
+        });
         adapter.setHeader(VARY_HEADER, varyHeader.toString());
     }
 

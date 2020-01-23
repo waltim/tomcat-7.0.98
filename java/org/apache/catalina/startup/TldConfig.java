@@ -332,7 +332,7 @@ public final class TldConfig  implements LifecycleListener {
         Collection<TaglibDescriptor> descriptors =
             context.getJspConfigDescriptor().getTaglibs();
 
-        for (TaglibDescriptor descriptor : descriptors) {
+        descriptors.forEach((descriptor) -> {
             String resourcePath = descriptor.getTaglibLocation();
             // Note: Whilst the Servlet 2.4 DTD implies that the location must
             // be a context-relative path starting with '/', JSP.7.3.6.1 states
@@ -375,7 +375,7 @@ public final class TldConfig  implements LifecycleListener {
                     }
                 }
             }
-        }
+        });
     }
 
     /*

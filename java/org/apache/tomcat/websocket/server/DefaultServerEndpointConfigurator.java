@@ -61,15 +61,13 @@ public class DefaultServerEndpointConfigurator
     public List<Extension> getNegotiatedExtensions(List<Extension> installed,
             List<Extension> requested) {
         Set<String> installedNames = new HashSet<String>();
-        for (Extension e : installed) {
+        installed.forEach((e) -> {
             installedNames.add(e.getName());
-        }
+        });
         List<Extension> result = new ArrayList<Extension>();
-        for (Extension request : requested) {
-            if (installedNames.contains(request.getName())) {
-                result.add(request);
-            }
-        }
+        requested.stream().filter((request) -> (installedNames.contains(request.getName()))).forEachOrdered((request) -> {
+            result.add(request);
+        });
         return result;
     }
 

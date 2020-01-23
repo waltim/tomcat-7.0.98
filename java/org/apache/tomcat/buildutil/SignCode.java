@@ -147,8 +147,7 @@ public class SignCode extends Task {
 
         // Process the filesets and populate the list of files that need to be
         // signed.
-        for (FileSet fileset : filesets) {
-            DirectoryScanner ds = fileset.getDirectoryScanner(getProject());
+        filesets.stream().map((fileset) -> fileset.getDirectoryScanner(getProject())).forEachOrdered((ds) -> {
             File basedir = ds.getBasedir();
             String[] files = ds.getIncludedFiles();
             if (files.length > 0) {
@@ -157,7 +156,7 @@ public class SignCode extends Task {
                     filesToSign.add(file);
                 }
             }
-        }
+        });
 
         // Set up the TLS client
         System.setProperty("javax.net.ssl.keyStore", keyStore);

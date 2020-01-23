@@ -489,9 +489,9 @@ public class WsSession implements Session {
 
         IOException ioe = new IOException(sm.getString("wsSession.messageFailed"));
         SendResult sr = new SendResult(ioe);
-        for (FutureToSendHandler f2sh : futures.keySet()) {
+        futures.keySet().forEach((f2sh) -> {
             f2sh.onResult(sr);
-        }
+        });
     }
 
 

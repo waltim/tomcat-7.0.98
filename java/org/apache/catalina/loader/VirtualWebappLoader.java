@@ -186,9 +186,9 @@ public class VirtualWebappLoader extends WebappLoader {
             }
         }
 
-        for (String repository: set) {
+        set.forEach((repository) -> {
             addRepository(repository);
-        }
+        });
 
         super.startInternal();
     }

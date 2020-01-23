@@ -163,12 +163,9 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             if (JreCompat.isJre7Available()) {
                 final Method registerParallel =
                         ClassLoader.class.getDeclaredMethod("registerAsParallelCapable");
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    @Override
-                    public Void run() {
-                        registerParallel.setAccessible(true);
-                        return null;
-                    }
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                    registerParallel.setAccessible(true);
+                    return null;
                 });
                 registerParallel.invoke(null);
                 getClassLoadingLockMethod =
@@ -1324,9 +1321,9 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
         }
         if (this.transformers.size() > 0) {
             sb.append("----------> Class file transformers:\r\n");
-            for (ClassFileTransformer transformer : this.transformers) {
+            this.transformers.forEach((transformer) -> {
                 sb.append(transformer).append("\r\n");
-            }
+            });
         }
         return (sb.toString());
 
@@ -2363,10 +2360,10 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             @SuppressWarnings("unchecked") // clearJdbcDriverRegistrations() returns List<String>
             List<String> driverNames = (List<String>) obj.getClass().getMethod(
                     "clearJdbcDriverRegistrations").invoke(obj);
-            for (String name : driverNames) {
+            driverNames.forEach((name) -> {
                 log.error(sm.getString("webappClassLoader.clearJdbc",
                         contextName, name));
-            }
+            });
         } catch (Exception e) {
             // So many things to go wrong above...
             Throwable t = ExceptionUtils.unwrapInvocationTargetException(e);

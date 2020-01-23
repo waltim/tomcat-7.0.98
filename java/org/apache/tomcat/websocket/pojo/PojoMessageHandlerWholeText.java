@@ -129,8 +129,8 @@ public class PojoMessageHandlerWholeText
 
     @Override
     protected void onClose() {
-        for (Decoder decoder : decoders) {
+        decoders.forEach((decoder) -> {
             decoder.destroy();
-        }
+        });
     }
 }

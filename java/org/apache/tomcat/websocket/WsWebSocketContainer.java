@@ -500,9 +500,9 @@ public class WsWebSocketContainer
             List<String> extHeaders = handshakeResponse.getHeaders().get(
                     Constants.WS_EXTENSIONS_HEADER_NAME);
             if (extHeaders != null) {
-                for (String extHeader : extHeaders) {
+                extHeaders.forEach((extHeader) -> {
                     Util.parseExtensionHeader(extensionsAgreed, extHeader);
-                }
+                });
             }
 
             // Build the transformations
@@ -750,20 +750,21 @@ public class WsWebSocketContainer
 
     private static List<String> generateExtensionHeaders(List<Extension> extensions) {
         List<String> result = new ArrayList<String>(extensions.size());
-        for (Extension extension : extensions) {
+        extensions.stream().map((extension) -> {
             StringBuilder header = new StringBuilder();
             header.append(extension.getName());
-            for (Extension.Parameter param : extension.getParameters()) {
+            extension.getParameters().stream().map((param) -> {
                 header.append(';');
                 header.append(param.getName());
-                String value = param.getValue();
-                if (value != null && value.length() > 0) {
-                    header.append('=');
-                    header.append(value);
-                }
-            }
+                return param;
+            }).map((param) -> param.getValue()).filter((value) -> (value != null && value.length() > 0)).forEachOrdered((value) -> {
+                header.append('=');
+                header.append(value);
+            });
+            return header;
+        }).forEachOrdered((header) -> {
             result.add(header.toString());
-        }
+        });
         return result;
     }
 
@@ -1106,14 +1107,14 @@ public class WsWebSocketContainer
         CloseReason cr = new CloseReason(
                 CloseCodes.GOING_AWAY, sm.getString("wsWebSocketContainer.shutdown"));
 
-        for (WsSession session : sessions.keySet()) {
+        sessions.keySet().forEach((session) -> {
             try {
                 session.close(cr);
             } catch (IOException ioe) {
                 log.debug(sm.getString(
                         "wsWebSocketContainer.sessionCloseFail", session.getId()), ioe);
             }
-        }
+        });
 
         // Only unregister with AsyncChannelGroupUtil if this instance
         // registered with it
@@ -1154,9 +1155,9 @@ public class WsWebSocketContainer
         if (backgroundProcessCount >= processPeriod) {
             backgroundProcessCount = 0;
 
-            for (WsSession wsSession : sessions.keySet()) {
+            sessions.keySet().forEach((wsSession) -> {
                 wsSession.checkExpiration();
-            }
+            });
         }
 
     }

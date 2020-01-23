@@ -348,10 +348,9 @@ public class MbeansDescriptorsIntrospectionSource extends ModelerSource
             // This map is populated by iterating the methods (which end up as
             // values in the Map) and obtaining the key from the value. It is
             // impossible for a key to be associated with a null value.
-            for (Entry<String,Method> entry : invokeAttMap.entrySet()) {
+            invokeAttMap.entrySet().stream().map((entry) -> {
                 String name = entry.getKey();
                 Method m = entry.getValue();
-
                 OperationInfo op=new OperationInfo();
                 op.setName(name);
                 op.setReturnType(m.getReturnType().getName());
@@ -364,8 +363,10 @@ public class MbeansDescriptorsIntrospectionSource extends ModelerSource
                     pi.setDescription(("Introspected parameter param" + i).intern());
                     op.addParameter(pi);
                 }
+                return op;
+            }).forEachOrdered((op) -> {
                 mbean.addOperation(op);
-            }
+            });
 
             if( log.isDebugEnabled())
                 log.debug("Setting name: " + type );

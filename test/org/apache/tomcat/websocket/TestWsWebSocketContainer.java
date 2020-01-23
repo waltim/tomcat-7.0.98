@@ -734,12 +734,10 @@ public class TestWsWebSocketContainer extends WebSocketBaseTest {
         }
 
         if (isOpen) {
-            for (Session session : setA) {
-                if (session.isOpen()) {
-                    System.err.println("Session with ID [" + session.getId() +
-                            "] is open");
-                }
-            }
+            setA.stream().filter((session) -> (session.isOpen())).forEachOrdered((session) -> {
+                System.err.println("Session with ID [" + session.getId() +
+                        "] is open");
+            });
             Assert.fail("There were open sessions");
         }
     }
@@ -798,11 +796,7 @@ public class TestWsWebSocketContainer extends WebSocketBaseTest {
 
     private int getOpenCount(Set<Session> sessions) {
         int result = 0;
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                result++;
-            }
-        }
+        result = sessions.stream().filter((session) -> (session.isOpen())).map((_item) -> 1).reduce(result, Integer::sum);
         return result;
     }
 

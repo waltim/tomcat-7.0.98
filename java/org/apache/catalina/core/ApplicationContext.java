@@ -1075,13 +1075,11 @@ public class ApplicationContext implements ServletContext {
         }
 
         // Check that only supported tracking modes have been requested
-        for (SessionTrackingMode sessionTrackingMode : sessionTrackingModes) {
-            if (!supportedSessionTrackingModes.contains(sessionTrackingMode)) {
-                throw new IllegalArgumentException(sm.getString(
-                        "applicationContext.setSessionTracking.iae.invalid",
-                        sessionTrackingMode.toString(), getContextPath()));
-            }
-        }
+        sessionTrackingModes.stream().filter((sessionTrackingMode) -> (!supportedSessionTrackingModes.contains(sessionTrackingMode))).forEachOrdered((sessionTrackingMode) -> {
+            throw new IllegalArgumentException(sm.getString(
+                    "applicationContext.setSessionTracking.iae.invalid",
+                    sessionTrackingMode.toString(), getContextPath()));
+        });
 
         // Check SSL has not be configured with anything else
         if (sessionTrackingModes.contains(SessionTrackingMode.SSL)) {
@@ -1364,15 +1362,14 @@ public class ApplicationContext implements ServletContext {
 
         // Create list of attributes to be removed
         List<String> list = new ArrayList<String>();
-        for (String s : attributes.keySet()) {
+        attributes.keySet().forEach((s) -> {
             list.add(s);
-        }
-
+        });
         // Remove application originated attributes
         // (read only attributes will be left in place)
-        for (String key : list) {
+        list.forEach((key) -> {
             removeAttribute(key);
-        }
+        });
 
     }
 

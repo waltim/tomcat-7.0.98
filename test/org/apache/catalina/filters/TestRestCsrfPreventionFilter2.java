@@ -240,9 +240,9 @@ public class TestRestCsrfPreventionFilter2 extends TomcatBaseTest {
 
     private void saveCookies(List<String> newCookies) {
         if (newCookies != null && newCookies.size() > 0) {
-            for (String header : newCookies) {
+            newCookies.forEach((header) -> {
                 cookies.add(header.substring(0, header.indexOf(';')));
-            }
+            });
         }
     }
 

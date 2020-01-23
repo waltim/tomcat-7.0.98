@@ -1337,11 +1337,9 @@ public class ContextConfig implements LifecycleListener {
             for (WebXml fragment : orderedFragments) {
                 resourceJars.add(fragment);
             }
-            for (WebXml fragment : fragments.values()) {
-                if (!resourceJars.contains(fragment)) {
-                    resourceJars.add(fragment);
-                }
-            }
+            fragments.values().stream().filter((fragment) -> (!resourceJars.contains(fragment))).forEachOrdered((fragment) -> {
+                resourceJars.add(fragment);
+            });
             processResourceJARs(resourceJars);
             // See also StandardContext.resourcesStart() for
             // WEB-INF/classes/META-INF/resources configuration
@@ -1350,9 +1348,7 @@ public class ContextConfig implements LifecycleListener {
         // Step 11. Apply the ServletContainerInitializer config to the
         // context
         if (ok) {
-            for (Map.Entry<ServletContainerInitializer,
-                    Set<Class<?>>> entry :
-                        initializerClassMap.entrySet()) {
+            initializerClassMap.entrySet().forEach((entry) -> {
                 if (entry.getValue().isEmpty()) {
                     context.addServletContainerInitializer(
                             entry.getKey(), null);
@@ -1360,7 +1356,7 @@ public class ContextConfig implements LifecycleListener {
                     context.addServletContainerInitializer(
                             entry.getKey(), entry.getValue());
                 }
-            }
+            });
         }
     }
 
@@ -1547,11 +1543,9 @@ public class ContextConfig implements LifecycleListener {
         } else {
             jspInitParams = jspServlet.getParameterMap();
         }
-        for (ServletDef servletDef: webXml.getServlets().values()) {
-            if (servletDef.getJspFile() != null) {
-                convertJsp(servletDef, jspInitParams);
-            }
-        }
+        webXml.getServlets().values().stream().filter((servletDef) -> (servletDef.getJspFile() != null)).forEachOrdered((servletDef) -> {
+            convertJsp(servletDef, jspInitParams);
+        });
     }
 
     private void convertJsp(ServletDef servletDef,
@@ -1572,9 +1566,9 @@ public class ContextConfig implements LifecycleListener {
         }
         servletDef.getParameterMap().put("jspFile", jspFile);
         servletDef.setJspFile(null);
-        for (Map.Entry<String, String> initParam: jspInitParams.entrySet()) {
+        jspInitParams.entrySet().forEach((initParam) -> {
             servletDef.addInitParameter(initParam.getKey(), initParam.getValue());
-        }
+        });
     }
 
     protected WebXml createWebXml() {
@@ -1942,7 +1936,7 @@ public class ContextConfig implements LifecycleListener {
 
     protected void processAnnotations(Set<WebXml> fragments,
             boolean handlesTypesOnly) {
-        for(WebXml fragment : fragments) {
+        fragments.forEach((fragment) -> {
             WebXml annotations = new WebXml();
             // no impact on distributable
             annotations.setDistributable(true);
@@ -1953,7 +1947,7 @@ public class ContextConfig implements LifecycleListener {
             set.add(annotations);
             // Merge annotations into fragment - fragment takes priority
             fragment.merge(set);
-        }
+        });
     }
 
     protected void processAnnotationsUrl(URL url, WebXml fragment,

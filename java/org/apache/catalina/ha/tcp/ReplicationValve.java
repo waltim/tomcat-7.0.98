@@ -448,16 +448,18 @@ public class ReplicationValve
     protected void sendCrossContextSession(CatalinaCluster containerCluster) {
         List<DeltaSession> sessions = crossContextSessions.get();
         if(sessions != null && sessions.size() >0) {
-            for (DeltaSession session : sessions) {
+            sessions.stream().map((session) -> {
                 if(log.isDebugEnabled()) {
                     log.debug(sm.getString("ReplicationValve.crossContext.sendDelta",
                             session.getManager().getContainer().getName() ));
                 }
+                return session;
+            }).map((session) -> {
                 sendMessage(session,(ClusterManager)session.getManager(),containerCluster);
-                if(doStatistics()) {
-                    nrOfCrossContextSendRequests++;
-                }
-            }
+                return session;
+            }).filter((_item) -> (doStatistics())).forEachOrdered((_item) -> {
+                nrOfCrossContextSendRequests++;
+            });
         }
     }
 

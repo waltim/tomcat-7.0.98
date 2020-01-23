@@ -287,12 +287,9 @@ public final class SecurityUtil{
         try{
             Subject subject = null;
             PrivilegedExceptionAction<Void> pea =
-                new PrivilegedExceptionAction<Void>(){
-                    @Override
-                    public Void run() throws Exception{
-                       method.invoke(targetObject, targetArguments);
-                       return null;
-                    }
+                () -> {
+                    method.invoke(targetObject, targetArguments);
+                    return null;
             };
 
             // The first argument is always the request object

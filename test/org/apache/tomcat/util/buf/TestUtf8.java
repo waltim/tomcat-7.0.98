@@ -533,9 +533,9 @@ public class TestUtf8 {
     @Test
     public void testHarmonyDecoder() {
         CharsetDecoder decoder = new Utf8Decoder();
-        for (Utf8TestCase testCase : TEST_CASES) {
+        TEST_CASES.forEach((testCase) -> {
             doTest(decoder, testCase, 0);
-        }
+        });
     }
 
 
@@ -544,10 +544,10 @@ public class TestUtf8 {
         CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
         int testCount = 0;
         try {
-            for (Utf8TestCase testCase : TEST_CASES) {
+            testCount = TEST_CASES.stream().map((testCase) -> {
                 doTest(decoder, testCase, testCase.flagsJvm);
-                testCount++;
-            }
+                return testCase;
+            }).map((_item) -> 1).reduce(testCount, Integer::sum);
         } finally {
             System.err.println("Workarounds added to " + workAroundCount +
                     " tests to account for known JVM bugs");

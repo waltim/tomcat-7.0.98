@@ -54,18 +54,18 @@ public class TesterBase64Performance {
         }
 
         long startTomcat = System.currentTimeMillis();
-        for (ByteChunk bc : inputs) {
+        inputs.forEach((bc) -> {
             CharChunk cc = new CharChunk(bc.getLength());
             Base64.decode(bc, cc);
-        }
+        });
         long stopTomcat =  System.currentTimeMillis();
         System.out.println("Tomcat: " + (stopTomcat - startTomcat) + " ms");
 
         long startCodec = System.currentTimeMillis();
-        for (ByteChunk bc : inputs) {
+        inputs.forEach((bc) -> {
             org.apache.tomcat.util.codec.binary.Base64.decodeBase64(
                     bc.getBuffer(), bc.getOffset(), bc.getLength());
-        }
+        });
         long stopCodec =  System.currentTimeMillis();
         System.out.println("Codec: " + (stopCodec - startCodec) + " ms");
     }

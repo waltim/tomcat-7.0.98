@@ -93,9 +93,9 @@ public class TestWsServerContainer extends WebSocketBaseTest {
 
             Queue<String> messages = handler.getMessages();
             Assert.assertEquals(1, messages.size());
-            for (String message : messages) {
+            messages.forEach((message) -> {
                 Assert.assertEquals("echoBasic", message);
-            }
+            });
         } finally {
             if (session != null) {
                 session.close();

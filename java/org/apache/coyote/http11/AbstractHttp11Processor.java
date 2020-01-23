@@ -1512,10 +1512,10 @@ public abstract class AbstractHttp11Processor<S> extends AbstractProcessor<S> {
         if (transferEncodingValueMB != null) {
             List<String> encodingNames = new ArrayList<String>();
             TokenList.parseTokenList(headers.values("transfer-encoding"), encodingNames);
-            for (String encodingName : encodingNames) {
+            encodingNames.forEach((encodingName) -> {
                 // "identity" codings are ignored
                 addInputFilter(inputFilters, encodingName);
-            }
+            });
         }
 
         // Parse content-length header

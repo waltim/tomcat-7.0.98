@@ -785,9 +785,9 @@ public class AprEndpoint extends AbstractEndpoint<Long> {
             // Close any sockets not in the poller performing blocking
             // read/writes. Need to do this before destroying the poller since
             // that will also destroy the root pool for these sockets.
-            for (Long s : connections.keySet()) {
+            connections.keySet().forEach((s) -> {
                 Socket.shutdown(s.longValue(), Socket.APR_SHUTDOWN_READWRITE);
-            }
+            });
             try {
                 poller.destroy();
             } catch (Exception e) {

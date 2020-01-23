@@ -350,9 +350,9 @@ public class Diagnostics {
 
         sb.append(requestedSm.getString("diagnostics.vmInfoStartup"));
         sb.append(":" + CRLF);
-        for (String arg: runtimeMXBean.getInputArguments()) {
+        runtimeMXBean.getInputArguments().forEach((arg) -> {
             sb.append(INDENT1 + arg + CRLF);
-        }
+        });
         sb.append(CRLF);
 
         sb.append(requestedSm.getString("diagnostics.vmInfoPath"));
@@ -383,23 +383,36 @@ public class Diagnostics {
                   compilationMXBean.isCompilationTimeMonitoringSupported() + CRLF);
         sb.append(CRLF);
 
-        for (MemoryManagerMXBean mbean: memoryManagerMXBeans) {
+        memoryManagerMXBeans.stream().map((mbean) -> {
             sb.append(requestedSm.getString("diagnostics.vmInfoMemoryManagers", mbean.getName()));
+            return mbean;
+        }).map((mbean) -> {
             sb.append(":" + CRLF);
             sb.append(INDENT1 + "isValid: " + mbean.isValid() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "mbean.getMemoryPoolNames: " + CRLF);
             String[] names = mbean.getMemoryPoolNames();
+            return names;
+        }).map((names) -> {
             Arrays.sort(names);
+            return names;
+        }).map((names) -> {
             for (String name: names) {
                 sb.append(INDENT2 + name + CRLF);
             }
+            return names;
+        }).forEachOrdered((_item) -> {
             sb.append(CRLF);
-        }
-
-        for (GarbageCollectorMXBean mbean: garbageCollectorMXBeans) {
+        });
+        garbageCollectorMXBeans.stream().map((mbean) -> {
             sb.append(requestedSm.getString("diagnostics.vmInfoGarbageCollectors", mbean.getName()));
+            return mbean;
+        }).map((mbean) -> {
             sb.append(":" + CRLF);
             sb.append(INDENT1 + "isValid: " + mbean.isValid() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "mbean.getMemoryPoolNames: " + CRLF);
             String[] names = mbean.getMemoryPoolNames();
             Arrays.sort(names);
@@ -407,9 +420,13 @@ public class Diagnostics {
                 sb.append(INDENT2 + name + CRLF);
             }
             sb.append(INDENT1 + "getCollectionCount: " + mbean.getCollectionCount() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "getCollectionTime: " + mbean.getCollectionTime() + CRLF);
+            return mbean;
+        }).forEachOrdered((_item) -> {
             sb.append(CRLF);
-        }
+        });
 
         sb.append(requestedSm.getString("diagnostics.vmInfoMemory"));
         sb.append(":" + CRLF);
@@ -419,11 +436,17 @@ public class Diagnostics {
         sb.append(formatMemoryUsage("non-heap", memoryMXBean.getNonHeapMemoryUsage()));
         sb.append(CRLF);
 
-        for (MemoryPoolMXBean mbean: memoryPoolMXBeans) {
+        memoryPoolMXBeans.stream().map((mbean) -> {
             sb.append(requestedSm.getString("diagnostics.vmInfoMemoryPools", mbean.getName()));
+            return mbean;
+        }).map((mbean) -> {
             sb.append(":" + CRLF);
             sb.append(INDENT1 + "isValid: " + mbean.isValid() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "getType: " + mbean.getType() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "mbean.getMemoryManagerNames: " + CRLF);
             String[] names = mbean.getMemoryManagerNames();
             Arrays.sort(names);
@@ -431,42 +454,64 @@ public class Diagnostics {
                 sb.append(INDENT2 + name + CRLF);
             }
             sb.append(INDENT1 + "isUsageThresholdSupported: " + mbean.isUsageThresholdSupported() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "isUsageThresholdExceeded: " + mbean.isUsageThresholdExceeded() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             sb.append(INDENT1 + "isCollectionUsageThresholdSupported: " + mbean.isCollectionUsageThresholdSupported() + CRLF);
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "isCollectionUsageThresholdExceeded: " + mbean.isCollectionUsageThresholdExceeded() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "getUsageThreshold: " + mbean.getUsageThreshold() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "getUsageThresholdCount: " + mbean.getUsageThresholdCount() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "getCollectionUsageThreshold: " + mbean.getCollectionUsageThreshold() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             try {
                 sb.append(INDENT1 + "getCollectionUsageThresholdCount: " + mbean.getCollectionUsageThresholdCount() + CRLF);
             } catch (UnsupportedOperationException ex) {
                 // IGNORE
             }
+            return mbean;
+        }).map((mbean) -> {
             sb.append(formatMemoryUsage("current", mbean.getUsage()));
+            return mbean;
+        }).map((mbean) -> {
             sb.append(formatMemoryUsage("collection", mbean.getCollectionUsage()));
+            return mbean;
+        }).map((mbean) -> {
             sb.append(formatMemoryUsage("peak", mbean.getPeakUsage()));
+            return mbean;
+        }).forEachOrdered((_item) -> {
             sb.append(CRLF);
-        }
+        });
 
 
         sb.append(requestedSm.getString("diagnostics.vmInfoSystem"));
@@ -474,20 +519,20 @@ public class Diagnostics {
         Map<String,String> props = runtimeMXBean.getSystemProperties();
         ArrayList<String> keys = new ArrayList<String>(props.keySet());
         Collections.sort(keys);
-        for (String prop: keys) {
+        keys.forEach((prop) -> {
             sb.append(INDENT1 + prop + ": " + props.get(prop) + CRLF);
-        }
+        });
         sb.append(CRLF);
 
         sb.append(requestedSm.getString("diagnostics.vmInfoLogger"));
         sb.append(":" + CRLF);
         List<String> loggers = loggingMXBean.getLoggerNames();
         Collections.sort(loggers);
-        for (String logger: loggers) {
+        loggers.forEach((logger) -> {
             sb.append(INDENT1 + logger +
-                      ": level=" + loggingMXBean.getLoggerLevel(logger) +
-                      ", parent=" + loggingMXBean.getParentLoggerName(logger) + CRLF);
-        }
+                    ": level=" + loggingMXBean.getLoggerLevel(logger) +
+                    ", parent=" + loggingMXBean.getParentLoggerName(logger) + CRLF);
+        });
         sb.append(CRLF);
 
         return sb.toString();

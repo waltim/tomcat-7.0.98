@@ -346,9 +346,9 @@ public class NamingContextListener
                 if (!objectNames.isEmpty()) {
                     Collection<ObjectName> names = objectNames.values();
                     Registry registry = Registry.getRegistry(null, null);
-                    for (ObjectName objectName : names) {
+                    names.forEach((objectName) -> {
                         registry.unregisterComponent(objectName);
-                    }
+                    });
                 }
 
                 javax.naming.Context global = getGlobalNamingContext();

@@ -36,14 +36,14 @@ public class WsHandshakeResponse implements HandshakeResponse {
 
 
     public WsHandshakeResponse(Map<String,List<String>> headers) {
-        for (Entry<String,List<String>> entry : headers.entrySet()) {
+        headers.entrySet().forEach((entry) -> {
             if (this.headers.containsKey(entry.getKey())) {
                 this.headers.get(entry.getKey()).addAll(entry.getValue());
             } else {
                 List<String> values = new ArrayList<String>(entry.getValue());
                 this.headers.put(entry.getKey(), values);
             }
-        }
+        });
     }
 
 

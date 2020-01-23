@@ -91,9 +91,9 @@ public class TestPojoMethodMapping extends TomcatBaseTest {
 
         // Check no errors
         List<String> errors = server.getErrors();
-        for (String error : errors) {
+        errors.forEach((error) -> {
             System.err.println(error);
-        }
+        });
         Assert.assertEquals("Found errors", 0, errors.size());
     }
 

@@ -373,17 +373,14 @@ public class TestAbstractHttp11Processor extends TomcatBaseTest {
         client.setUseContentLength(true);
         client.connect();
 
-        Runnable send = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    client.sendRequest();
-                    client.sendRequest();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        Runnable send = () -> {
+            try {
+                client.sendRequest();
+                client.sendRequest();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         };
         Thread t = new Thread(send);
@@ -789,18 +786,15 @@ public class TestAbstractHttp11Processor extends TomcatBaseTest {
         protected void doPut(HttpServletRequest req, final HttpServletResponse resp)
                 throws ServletException, IOException {
             final AsyncContext ac = req.startAsync();
-            ac.start(new Runnable() {
-                @Override
-                public void run() {
-                    resp.setContentType("text/plain");
-                    resp.setCharacterEncoding("UTF-8");
-                    try {
-                        resp.getWriter().print("OK");
-                    } catch (IOException e) {
-                        // Should never happen. Test will fail if it does.
-                    }
-                    ac.complete();
+            ac.start(() -> {
+                resp.setContentType("text/plain");
+                resp.setCharacterEncoding("UTF-8");
+                try {
+                    resp.getWriter().print("OK");
+                } catch (IOException e) {
+                    // Should never happen. Test will fail if it does.
                 }
+                ac.complete();
             });
         }
     }

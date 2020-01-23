@@ -111,26 +111,26 @@ public class VersionLoggerListener implements LifecycleListener {
 
         if (logArgs) {
             List<String> args = ManagementFactory.getRuntimeMXBean().getInputArguments();
-            for (String arg : args) {
+            args.forEach((arg) -> {
                 log.info(sm.getString("versionLoggerListener.arg", arg));
-            }
+            });
         }
 
         if (logEnv) {
             SortedMap<String, String> sortedMap = new TreeMap<String, String>(System.getenv());
-            for (Map.Entry<String, String> e : sortedMap.entrySet()) {
+            sortedMap.entrySet().forEach((e) -> {
                 log.info(sm.getString("versionLoggerListener.env", e.getKey(), e.getValue()));
-            }
+            });
         }
 
         if (logProps) {
             SortedMap<String, String> sortedMap = new TreeMap<String, String>();
-            for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+            System.getProperties().entrySet().forEach((e) -> {
                 sortedMap.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
-            }
-            for (Map.Entry<String, String> e : sortedMap.entrySet()) {
+            });
+            sortedMap.entrySet().forEach((e) -> {
                 log.info(sm.getString("versionLoggerListener.prop", e.getKey(), e.getValue()));
-            }
+            });
         }
     }
 }

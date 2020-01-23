@@ -249,9 +249,9 @@ public class TestWebXmlOrdering {
 
     private String getOrder(Set<WebXml> ordered) {
         StringBuilder sb = new StringBuilder(ordered.size());
-        for (WebXml webXml : ordered) {
+        ordered.forEach((webXml) -> {
             sb.append(webXml.getName());
-        }
+        });
         return sb.toString();
     }
 

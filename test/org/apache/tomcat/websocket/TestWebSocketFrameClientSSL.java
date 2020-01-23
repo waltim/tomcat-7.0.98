@@ -90,9 +90,9 @@ public class TestWebSocketFrameClientSSL extends WebSocketBaseTest {
         Queue<String> messages = handler.getMessages();
         Assert.assertEquals(
                 TesterFirehoseServer.MESSAGE_COUNT, messages.size());
-        for (String message : messages) {
+        messages.forEach((message) -> {
             Assert.assertEquals(TesterFirehoseServer.MESSAGE, message);
-        }
+        });
     }
 
 

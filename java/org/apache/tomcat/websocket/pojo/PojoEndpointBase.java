@@ -55,10 +55,10 @@ public abstract class PojoEndpointBase extends Endpoint {
         // Add message handlers before calling onOpen since that may trigger a
         // message which in turn could trigger a response and/or close the
         // session
-        for (MessageHandler mh : methodMapping.getMessageHandlers(pojo,
-                pathParameters, session, config)) {
-            session.addMessageHandler(mh);
-        }
+        methodMapping.getMessageHandlers(pojo,
+                pathParameters, session, config).forEach((mh) -> {
+                    session.addMessageHandler(mh);
+        });
 
         if (methodMapping.getOnOpen() != null) {
             try {
@@ -111,11 +111,9 @@ public abstract class PojoEndpointBase extends Endpoint {
 
         // Trigger the destroy method for any associated decoders
         Set<MessageHandler> messageHandlers = session.getMessageHandlers();
-        for (MessageHandler messageHandler : messageHandlers) {
-            if (messageHandler instanceof PojoMessageHandlerWholeBase<?>) {
-                ((PojoMessageHandlerWholeBase<?>) messageHandler).onClose();
-            }
-        }
+        messageHandlers.stream().filter((messageHandler) -> (messageHandler instanceof PojoMessageHandlerWholeBase<?>)).forEachOrdered((messageHandler) -> {
+            ((PojoMessageHandlerWholeBase<?>) messageHandler).onClose();
+        });
     }
 
 

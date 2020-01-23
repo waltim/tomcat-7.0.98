@@ -652,17 +652,17 @@ public abstract class TomcatBaseTest extends LoggingBaseTest {
         connection.setRequestMethod(method);
         connection.setInstanceFollowRedirects(followRedirects);
         if (reqHead != null) {
-            for (Map.Entry<String, List<String>> entry : reqHead.entrySet()) {
+            reqHead.entrySet().forEach((entry) -> {
                 StringBuilder valueList = new StringBuilder();
-                for (String value : entry.getValue()) {
+                entry.getValue().forEach((value) -> {
                     if (valueList.length() > 0) {
                         valueList.append(',');
                     }
                     valueList.append(value);
-                }
+                });
                 connection.setRequestProperty(entry.getKey(),
                         valueList.toString());
-            }
+            });
         }
         connection.connect();
         int rc = connection.getResponseCode();
@@ -720,17 +720,17 @@ public abstract class TomcatBaseTest extends LoggingBaseTest {
         connection.setDoOutput(true);
         connection.setReadTimeout(1000000);
         if (reqHead != null) {
-            for (Map.Entry<String, List<String>> entry : reqHead.entrySet()) {
+            reqHead.entrySet().forEach((entry) -> {
                 StringBuilder valueList = new StringBuilder();
-                for (String value : entry.getValue()) {
+                entry.getValue().forEach((value) -> {
                     if (valueList.length() > 0) {
                         valueList.append(',');
                     }
                     valueList.append(value);
-                }
+                });
                 connection.setRequestProperty(entry.getKey(),
                         valueList.toString());
-            }
+            });
         }
         connection.connect();
 

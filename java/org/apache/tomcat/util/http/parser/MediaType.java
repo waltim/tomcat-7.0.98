@@ -72,20 +72,19 @@ public class MediaType {
                     result.append(type);
                     result.append('/');
                     result.append(subtype);
-                    for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                    parameters.entrySet().forEach((entry) -> {
                         String value = entry.getValue();
-                        if (value == null || value.length() == 0) {
-                            continue;
+                        if (!(value == null || value.length() == 0)) {
+                            result.append(';');
+                            // Workaround for Adobe Read 9 plug-in on IE bug
+                            // Can be removed after 26 June 2013 (EOL of Reader 9)
+                            // See BZ 53814
+                            result.append(' ');
+                            result.append(entry.getKey());
+                            result.append('=');
+                            result.append(value);
                         }
-                        result.append(';');
-                        // Workaround for Adobe Read 9 plug-in on IE bug
-                        // Can be removed after 26 June 2013 (EOL of Reader 9)
-                        // See BZ 53814
-                        result.append(' ');
-                        result.append(entry.getKey());
-                        result.append('=');
-                        result.append(value);
-                    }
+                    });
 
                     withCharset = result.toString();
                 }
@@ -102,19 +101,18 @@ public class MediaType {
                     result.append(type);
                     result.append('/');
                     result.append(subtype);
-                    for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                        if (entry.getKey().equalsIgnoreCase("charset")) {
-                            continue;
-                        }
+                    parameters.entrySet().stream().filter((entry) -> !(entry.getKey().equalsIgnoreCase("charset"))).map((entry) -> {
                         result.append(';');
                         // Workaround for Adobe Read 9 plug-in on IE bug
                         // Can be removed after 26 June 2013 (EOL of Reader 9)
                         // See BZ 53814
                         result.append(' ');
                         result.append(entry.getKey());
+                        return entry;
+                    }).forEachOrdered((entry) -> {
                         result.append('=');
                         result.append(entry.getValue());
-                    }
+                    });
 
                     noCharset = result.toString();
                 }

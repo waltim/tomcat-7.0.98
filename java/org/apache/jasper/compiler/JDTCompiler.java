@@ -486,64 +486,61 @@ public class JDTCompiler extends org.apache.jasper.compiler.Compiler {
         final IProblemFactory problemFactory =
             new DefaultProblemFactory(Locale.getDefault());
 
-        final ICompilerRequestor requestor = new ICompilerRequestor() {
-                @Override
-                public void acceptResult(CompilationResult result) {
-                    try {
-                        if (result.hasProblems()) {
-                            IProblem[] problems = result.getProblems();
-                            for (int i = 0; i < problems.length; i++) {
-                                IProblem problem = problems[i];
-                                if (problem.isError()) {
-                                    String name =
-                                        new String(problems[i].getOriginatingFileName());
-                                    try {
-                                        problemList.add(ErrorDispatcher.createJavacError
-                                                (name, pageNodes, new StringBuilder(problem.getMessage()),
-                                                        problem.getSourceLineNumber(), ctxt));
-                                    } catch (JasperException e) {
-                                        log.error("Error visiting node", e);
-                                    }
-                                }
+        final ICompilerRequestor requestor = (CompilationResult result) -> {
+            try {
+                if (result.hasProblems()) {
+                    IProblem[] problems = result.getProblems();
+                    for (int i = 0; i < problems.length; i++) {
+                        IProblem problem = problems[i];
+                        if (problem.isError()) {
+                            String name =
+                                    new String(problems[i].getOriginatingFileName());
+                            try {
+                                problemList.add(ErrorDispatcher.createJavacError
+                                                        (name, pageNodes, new StringBuilder(problem.getMessage()),
+                                                                problem.getSourceLineNumber(), ctxt));
+                            } catch (JasperException e) {
+                                log.error("Error visiting node", e);
                             }
                         }
-                        if (problemList.isEmpty()) {
-                            ClassFile[] classFiles = result.getClassFiles();
-                            for (int i = 0; i < classFiles.length; i++) {
-                                ClassFile classFile = classFiles[i];
-                                char[][] compoundName =
-                                    classFile.getCompoundName();
-                                StringBuilder classFileName = new StringBuilder(outputDir).append('/');
-                                for (int j = 0;
-                                     j < compoundName.length; j++) {
-                                    if(j > 0) {
-                                        classFileName.append('/');
-                                    }
-                                    classFileName.append(compoundName[j]);
-                                }
-                                byte[] bytes = classFile.getBytes();
-                                classFileName.append(".class");
-                                FileOutputStream fout = null;
-                                BufferedOutputStream bos = null;
-                                try {
-                                    fout = new FileOutputStream(classFileName.toString());
-                                    bos = new BufferedOutputStream(fout);
-                                    bos.write(bytes);
-                                } finally {
-                                    if (bos != null) {
-                                        try {
-                                            bos.close();
-                                        } catch (IOException e) {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (IOException exc) {
-                        log.error("Compilation error", exc);
                     }
                 }
-            };
+                if (problemList.isEmpty()) {
+                    ClassFile[] classFiles = result.getClassFiles();
+                    for (int i = 0; i < classFiles.length; i++) {
+                        ClassFile classFile = classFiles[i];
+                        char[][] compoundName =
+                                classFile.getCompoundName();
+                        StringBuilder classFileName = new StringBuilder(outputDir).append('/');
+                        for (int j = 0;
+                                j < compoundName.length; j++) {
+                            if(j > 0) {
+                                classFileName.append('/');
+                            }
+                            classFileName.append(compoundName[j]);
+                        }
+                        byte[] bytes = classFile.getBytes();
+                        classFileName.append(".class");
+                        FileOutputStream fout = null;
+                        BufferedOutputStream bos = null;
+                        try {
+                            fout = new FileOutputStream(classFileName.toString());
+                            bos = new BufferedOutputStream(fout);
+                            bos.write(bytes);
+                        } finally {
+                            if (bos != null) {
+                                try {
+                                    bos.close();
+                                } catch (IOException e) {
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (IOException exc) {
+                log.error("Compilation error", exc);
+            }
+        };
 
         ICompilationUnit[] compilationUnits =
             new ICompilationUnit[classNames.length];

@@ -505,9 +505,9 @@ public class TestEncodingDecoding extends TomcatBaseTest {
         public String encode(List<String> str) throws EncodeException {
             StringBuffer sbuf = new StringBuffer();
             sbuf.append("[");
-            for (String s: str){
+            str.forEach((s) -> {
                 sbuf.append(s).append(",");
-            }
+            });
             sbuf.deleteCharAt(sbuf.lastIndexOf(",")).append("]");
             return sbuf.toString();
         }

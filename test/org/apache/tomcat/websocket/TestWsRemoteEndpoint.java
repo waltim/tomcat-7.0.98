@@ -151,11 +151,13 @@ public class TestWsRemoteEndpoint extends WebSocketBaseTest {
             // binary messages
             @SuppressWarnings("unchecked")
             List<ByteBuffer> messages = (List<ByteBuffer>) handler.getMessages();
-            for (ByteBuffer message : messages) {
+            messages.stream().map((message) -> {
                 byte[] bytes = new byte[message.limit()];
                 message.get(bytes);
+                return bytes;
+            }).forEachOrdered((bytes) -> {
                 results.add(new String(bytes, B2CConverter.UTF_8));
-            }
+            });
         }
 
         int offset = 0;

@@ -40,38 +40,32 @@ public class TestCharsetCache {
 
         List<String> cacheMisses = new ArrayList<String>();
 
-        for (Charset charset: Charset.availableCharsets().values()) {
+        Charset.availableCharsets().values().forEach((charset) -> {
             String name = charset.name().toLowerCase(Locale.ENGLISH);
-
             // No need to test the charsets that are pre-loaded
-            if (initial.contains(name)) {
-                continue;
-            }
-
-            if (!known.contains(name)) {
-                cacheMisses.add(name);
-            }
-
-            for (String alias : charset.aliases()) {
-                alias = alias.toLowerCase(Locale.ENGLISH);
-                if (!known.contains(alias)) {
+            if (!(initial.contains(name))) {
+                if (!known.contains(name)) {
+                    cacheMisses.add(name);
+                }   charset.aliases().stream().map((alias) -> alias.toLowerCase(Locale.ENGLISH)).filter((alias) -> (!known.contains(alias))).forEachOrdered((alias) -> {
                     cacheMisses.add(alias);
-                }
+                });
             }
-        }
+        });
 
         if (cacheMisses.size() != 0) {
             StringBuilder sb = new StringBuilder();
             Collections.sort(cacheMisses);
-            for (String name : cacheMisses) {
+            cacheMisses.stream().map((name) -> {
                 if (sb.length() == 0) {
                     sb.append('"');
                 } else {
                     sb.append(", \"");
                 }
                 sb.append(name.toLowerCase(Locale.ENGLISH));
+                return name;
+            }).forEachOrdered((_item) -> {
                 sb.append('"');
-            }
+            });
             System.out.println(sb.toString());
         }
 

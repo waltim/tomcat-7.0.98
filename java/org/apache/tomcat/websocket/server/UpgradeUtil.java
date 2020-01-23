@@ -158,9 +158,9 @@ public class UpgradeUtil {
             negotiatedExtensionsPhase2 = Collections.emptyList();
         } else {
             negotiatedExtensionsPhase2 = new ArrayList<Extension>(transformations.size());
-            for (Transformation t : transformations) {
+            transformations.forEach((t) -> {
                 negotiatedExtensionsPhase2.add(t.getExtensionResponse());
-            }
+            });
         }
 
         // Build the transformation pipeline
@@ -210,12 +210,11 @@ public class UpgradeUtil {
         wsRequest.finished();
 
         // Add any additional headers
-        for (Entry<String,List<String>> entry :
-                wsResponse.getHeaders().entrySet()) {
-            for (String headerValue: entry.getValue()) {
+        wsResponse.getHeaders().entrySet().forEach((entry) -> {
+            entry.getValue().forEach((headerValue) -> {
                 resp.addHeader(entry.getKey(), headerValue);
-            }
-        }
+            });
+        });
 
         Endpoint ep;
         try {
@@ -262,7 +261,7 @@ public class UpgradeUtil {
         // Result will likely be smaller than this
         List<Transformation> result = new ArrayList<Transformation>(negotiatedExtensions.size());
 
-        for (Extension extension : negotiatedExtensions) {
+        negotiatedExtensions.forEach((extension) -> {
             List<List<Extension.Parameter>> preferences =
                     extensionPreferences.get(extension.getName());
 
@@ -272,15 +271,10 @@ public class UpgradeUtil {
             }
 
             preferences.add(extension.getParameters());
-        }
-
-        for (Map.Entry<String,List<List<Extension.Parameter>>> entry :
-            extensionPreferences.entrySet()) {
-            Transformation transformation = factory.create(entry.getKey(), entry.getValue(), true);
-            if (transformation != null) {
-                result.add(transformation);
-            }
-        }
+        });
+        extensionPreferences.entrySet().stream().map((entry) -> factory.create(entry.getKey(), entry.getValue(), true)).filter((transformation) -> (transformation != null)).forEachOrdered((transformation) -> {
+            result.add(transformation);
+        });
         return result;
     }
 
@@ -292,14 +286,14 @@ public class UpgradeUtil {
 
         sb.append(extension.getName());
 
-        for (Extension.Parameter p : extension.getParameters()) {
+        extension.getParameters().stream().map((p) -> {
             sb.append(';');
             sb.append(p.getName());
-            if (p.getValue() != null) {
-                sb.append('=');
-                sb.append(p.getValue());
-            }
-        }
+            return p;
+        }).filter((p) -> (p.getValue() != null)).forEachOrdered((p) -> {
+            sb.append('=');
+            sb.append(p.getValue());
+        });
     }
 
 

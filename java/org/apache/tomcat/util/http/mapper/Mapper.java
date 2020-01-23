@@ -219,9 +219,9 @@ public final class Mapper {
      */
     private void updateContextList(Host realHost, ContextList newContextList) {
         realHost.contextList = newContextList;
-        for (Host alias : realHost.getAliases()) {
+        realHost.getAliases().forEach((alias) -> {
             alias.contextList = newContextList;
-        }
+        });
     }
 
     /**
@@ -480,11 +480,11 @@ public final class Mapper {
      */
     private void addWrappers(ContextVersion contextVersion,
             Collection<WrapperMappingInfo> wrappers) {
-        for (WrapperMappingInfo wrapper : wrappers) {
+        wrappers.forEach((wrapper) -> {
             addWrapper(contextVersion, wrapper.getMapping(),
                     wrapper.getWrapper(), wrapper.isJspWildCard(),
                     wrapper.isResourceOnly());
-        }
+        });
     }
 
     /**

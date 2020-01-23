@@ -48,9 +48,9 @@ public class JasperELResolver extends CompositeELResolver {
         size = 0;
 
         add(new ImplicitObjectELResolver());
-        for (ELResolver appResolver : appResolvers) {
+        appResolvers.forEach((appResolver) -> {
             add(appResolver);
-        }
+        });
         add(new MapELResolver());
         add(new ResourceBundleELResolver());
         add(new ListELResolver());

@@ -61,25 +61,15 @@ public class TestResponse extends TomcatBaseTest {
         getUrl("http://localhost:" + getPort() + "/", new ByteChunk(), headers);
 
         // Check for headers without a name
-        for (Map.Entry<String,List<String>> header : headers.entrySet()) {
-            if (header.getKey() == null) {
-                // Expected if this is the response line
-                List<String> values = header.getValue();
-                if (values.size() == 1 &&
-                        values.get(0).startsWith("HTTP/1.1")) {
-                    continue;
-                }
-                Assert.fail("Null header name detected for value " + values);
-            }
-        }
+        headers.entrySet().stream().filter((header) -> (header.getKey() == null)).map((header) -> header.getValue()).filter((values) -> !(values.size() == 1 &&
+                values.get(0).startsWith("HTTP/1.1"))).forEachOrdered((values) -> {
+            // Expected if this is the response line
+            Assert.fail("Null header name detected for value " + values);
+        });
 
         // Check for exactly one Set-Cookie header
         int count = 0;
-        for (String headerName : headers.keySet()) {
-            if ("Set-Cookie".equals(headerName)) {
-                count ++;
-            }
-        }
+        count = headers.keySet().stream().filter((headerName) -> ("Set-Cookie".equals(headerName))).map((_item) -> 1).reduce(count, Integer::sum);
         Assert.assertEquals(1, count);
     }
 

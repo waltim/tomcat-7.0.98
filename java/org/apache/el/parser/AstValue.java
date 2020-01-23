@@ -49,16 +49,9 @@ public final class AstValue extends SimpleNode {
     static {
         String coerceToZeroStr;
         if (IS_SECURITY_ENABLED) {
-            coerceToZeroStr = AccessController.doPrivileged(
-                    new PrivilegedAction<String>(){
-                        @Override
-                        public String run() {
-                            return System.getProperty(
-                                    "org.apache.el.parser.COERCE_TO_ZERO",
-                                    "true");
-                        }
-                    }
-            );
+            coerceToZeroStr = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(
+                    "org.apache.el.parser.COERCE_TO_ZERO",
+                    "true"));
         } else {
             coerceToZeroStr = System.getProperty(
                     "org.apache.el.parser.COERCE_TO_ZERO",

@@ -667,10 +667,12 @@ public final class CGIServlet extends HttpServlet {
 
         StringBuilder headerValue = new StringBuilder();
 
-        for (String method : allowedMethods) {
+        allowedMethods.stream().map((method) -> {
             headerValue.append(method);
+            return method;
+        }).forEachOrdered((_item) -> {
             headerValue.append(',');
-        }
+        });
 
         // Remove trailing comma
         headerValue.deleteCharAt(headerValue.length() - 1);
@@ -1279,14 +1281,20 @@ public final class CGIServlet extends HttpServlet {
 
                 sb.append("Environment values:");
                 sb.append(LINE_SEP);
-                for (Entry<String,String> entry : env.entrySet()) {
+                env.entrySet().stream().map((entry) -> {
                     sb.append("  ");
                     sb.append(entry.getKey());
+                    return entry;
+                }).map((entry) -> {
                     sb.append(": [");
                     sb.append(blanksToString(entry.getValue(), "will be set to blank"));
+                    return entry;
+                }).map((_item) -> {
                     sb.append("]");
+                    return _item;
+                }).forEachOrdered((_item) -> {
                     sb.append(LINE_SEP);
-                }
+                });
 
                 sb.append("Derived Command :[");
                 sb.append(nullsToBlanks(command));
@@ -1303,12 +1311,16 @@ public final class CGIServlet extends HttpServlet {
 
                 sb.append("Command Line Params:");
                 sb.append(LINE_SEP);
-                for (String param : cmdLineParameters) {
+                cmdLineParameters.stream().map((param) -> {
                     sb.append("  [");
                     sb.append(param);
+                    return param;
+                }).map((_item) -> {
                     sb.append("]");
+                    return _item;
+                }).forEachOrdered((_item) -> {
                     sb.append(LINE_SEP);
-                }
+                });
             } else {
                 sb.append("Validity: [false]");
                 sb.append(LINE_SEP);

@@ -154,12 +154,12 @@ public class TestAbstractAjpProcessor extends TomcatBaseTest {
         }
 
         ServletContext sc = ctx.getServletContext();
-        for (String name: contextInitParameters.keySet()) {
+        contextInitParameters.keySet().forEach((name) -> {
             sc.setInitParameter(name, contextInitParameters.get(name));
-        }
-        for (String name: contextAttributes.keySet()) {
+        });
+        contextAttributes.keySet().forEach((name) -> {
             sc.setAttribute(name, contextAttributes.get(name));
-        }
+        });
 
         /* Basic request properties must be set before this call */
         TesterAjpMessage forwardMessage = ajpClient.createForwardMessage();

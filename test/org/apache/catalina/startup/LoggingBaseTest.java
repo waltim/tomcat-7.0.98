@@ -123,9 +123,9 @@ public abstract class LoggingBaseTest {
 
     @After
     public void tearDown() throws Exception {
-        for (File file : deleteOnTearDown) {
+        deleteOnTearDown.forEach((file) -> {
             ExpandWar.delete(file);
-        }
+        });
         deleteOnTearDown.clear();
     }
 }

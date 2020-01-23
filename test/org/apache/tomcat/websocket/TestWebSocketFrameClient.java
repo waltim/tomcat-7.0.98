@@ -98,9 +98,9 @@ public class TestWebSocketFrameClient extends WebSocketBaseTest {
         Queue<String> messages = handler.getMessages();
         Assert.assertEquals(
                 TesterFirehoseServer.MESSAGE_COUNT, messages.size());
-        for (String message : messages) {
+        messages.forEach((message) -> {
             Assert.assertEquals(TesterFirehoseServer.MESSAGE, message);
-        }
+        });
     }
     @Test
     public void testConnectToRootEndpoint() throws Exception {
@@ -142,9 +142,9 @@ public class TestWebSocketFrameClient extends WebSocketBaseTest {
 
         Queue<String> messages = handler.getMessages();
         Assert.assertEquals(1, messages.size());
-        for (String message : messages) {
+        messages.forEach((message) -> {
             Assert.assertEquals("Hello", message);
-        }
+        });
         wsSession.close();
     }
 

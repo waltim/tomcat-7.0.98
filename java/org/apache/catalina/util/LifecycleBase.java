@@ -119,9 +119,9 @@ public abstract class LifecycleBase implements Lifecycle {
      */
     protected void fireLifecycleEvent(String type, Object data) {
         LifecycleEvent event = new LifecycleEvent(this, type, data);
-        for (LifecycleListener listener : lifecycleListeners) {
+        lifecycleListeners.forEach((listener) -> {
             listener.lifecycleEvent(event);
-        }
+        });
     }
 
 

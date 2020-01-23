@@ -189,10 +189,10 @@ public class UrlJar implements Jar {
 
         mrMap = new HashMap<String,String>();
 
-        for (Entry<String,Integer> mrVersion : mrVersions.entrySet()) {
+        mrVersions.entrySet().forEach((mrVersion) -> {
             mrMap.put(mrVersion.getKey() , "META-INF/versions/" + mrVersion.getValue().toString() +
                     "/" +  mrVersion.getKey());
-        }
+        });
 
         // Reset stream back to the beginning of the JAR
         close();

@@ -76,18 +76,24 @@ public class TesterAccessLogValve extends ValveBase implements AccessLog {
         }
 
         StringBuilder entriesLog = new StringBuilder();
-        for (Entry entry : entries) {
+        entries.stream().map((entry) -> {
             entriesLog.append(entry.toString());
+            return entry;
+        }).forEachOrdered((_item) -> {
             entriesLog.append(System.getProperty("line.separator"));
-        }
+        });
         Assert.assertEquals(entriesLog.toString(), count, entries.size());
-        for (Entry entry : entries) {
+        entries.stream().map((entry) -> {
             Assert.assertEquals(status, entry.getStatus());
+            return entry;
+        }).map((entry) -> {
             Assert.assertTrue(entry.toString() + " duration is not >= " + (minTime - ERROR_MARGIN),
                     entry.getTime() >= minTime - ERROR_MARGIN);
+            return entry;
+        }).forEachOrdered((entry) -> {
             Assert.assertTrue(entry.toString() + " duration is not < " + (maxTime + ERROR_MARGIN),
                     entry.getTime() < maxTime + ERROR_MARGIN);
-        }
+        });
     }
 
     public static class Entry {

@@ -101,13 +101,12 @@ public class TesterAjpMessage extends AjpMessage {
         // Add the header count
         appendInt(headers.size());
 
-        for (Header header : headers) {
+        headers.forEach((header) -> {
             header.append(this);
-        }
-
-        for (Attribute attribute : attributes) {
+        });
+        attributes.forEach((attribute) -> {
             attribute.append(this);
-        }
+        });
 
         // Terminator
         appendByte(0xFF);

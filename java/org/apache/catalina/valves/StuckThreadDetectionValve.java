@@ -239,17 +239,16 @@ public class StuckThreadDetectionValve extends ValveBase {
 
         // Check monitored threads, being careful that the request might have
         // completed by the time we examine it
-        for (MonitoredThread monitoredThread : activeThreads.values()) {
+        activeThreads.values().forEach((monitoredThread) -> {
             long activeTime = monitoredThread.getActiveTimeInMillis();
-
             if (activeTime >= thresholdInMillis && monitoredThread.markAsStuckIfStillRunning()) {
                 int numStuckThreads = stuckCount.incrementAndGet();
                 notifyStuckThreadDetected(monitoredThread, activeTime, numStuckThreads);
             }
-            if(interruptThreadThreshold > 0 && activeTime >= interruptThreadThreshold*1000L) {
+            if (interruptThreadThreshold > 0 && activeTime >= interruptThreadThreshold*1000L) {
                 monitoredThread.interruptIfStuck(interruptThreadThreshold);
             }
-        }
+        });
         // Check if any threads previously reported as stuck, have finished.
         for (CompletedStuckThread completedStuckThread = completedStuckThreadsQueue.poll();
             completedStuckThread != null; completedStuckThread = completedStuckThreadsQueue.poll()) {
@@ -265,11 +264,9 @@ public class StuckThreadDetectionValve extends ValveBase {
 
     public long[] getStuckThreadIds() {
         List<Long> idList = new ArrayList<Long>();
-        for (MonitoredThread monitoredThread : activeThreads.values()) {
-            if (monitoredThread.isMarkedAsStuck()) {
-                idList.add(Long.valueOf(monitoredThread.getThread().getId()));
-            }
-        }
+        activeThreads.values().stream().filter((monitoredThread) -> (monitoredThread.isMarkedAsStuck())).forEachOrdered((monitoredThread) -> {
+            idList.add(Long.valueOf(monitoredThread.getThread().getId()));
+        });
 
         long[] result = new long[idList.size()];
         for (int i = 0; i < result.length; i++) {
@@ -280,11 +277,9 @@ public class StuckThreadDetectionValve extends ValveBase {
 
     public String[] getStuckThreadNames() {
         List<String> nameList = new ArrayList<String>();
-        for (MonitoredThread monitoredThread : activeThreads.values()) {
-            if (monitoredThread.isMarkedAsStuck()) {
-                nameList.add(monitoredThread.getThread().getName());
-            }
-        }
+        activeThreads.values().stream().filter((monitoredThread) -> (monitoredThread.isMarkedAsStuck())).forEachOrdered((monitoredThread) -> {
+            nameList.add(monitoredThread.getThread().getName());
+        });
         return nameList.toArray(new String[nameList.size()]);
     }
 

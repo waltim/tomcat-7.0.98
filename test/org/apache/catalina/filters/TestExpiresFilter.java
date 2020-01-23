@@ -417,13 +417,13 @@ public class TestExpiresFilter extends TomcatBaseTest {
                     httpURLConnection.getResponseCode());
 
             StringBuilder msg = new StringBuilder();
-            for (Entry<String, List<String>> field : httpURLConnection.getHeaderFields().entrySet()) {
-                for (String value : field.getValue()) {
+            httpURLConnection.getHeaderFields().entrySet().forEach((field) -> {
+                field.getValue().forEach((value) -> {
                     msg.append((field.getKey() == null ? "" : field.getKey() +
                             ": ") +
                             value + "\n");
-                }
-            }
+                });
+            });
             System.out.println(msg);
 
             Integer actualMaxAgeInSeconds;

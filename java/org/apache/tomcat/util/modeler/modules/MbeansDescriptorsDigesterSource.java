@@ -193,8 +193,8 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
             }
 
         }
-        for (ManagedBean loadedMbean : loadedMbeans) {
+        loadedMbeans.forEach((loadedMbean) -> {
             registry.addManagedBean(loadedMbean);
-        }
+        });
     }
 }

@@ -1061,9 +1061,9 @@ public class TestRemoteIpValve {
         List<String> a = new ArrayList<String>();
         a.addAll(Arrays.asList(actual));
 
-        for (String entry : e) {
+        e.forEach((entry) -> {
             Assert.assertTrue(a.remove(entry));
-        }
+        });
         Assert.assertTrue(a.isEmpty());
     }
 }

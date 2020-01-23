@@ -130,7 +130,7 @@ public class WsSci implements ServletContainerInitializer {
         if (serverApplicationConfigs.isEmpty()) {
             filteredPojoEndpoints.addAll(scannedPojoEndpoints);
         } else {
-            for (ServerApplicationConfig config : serverApplicationConfigs) {
+            serverApplicationConfigs.stream().map((config) -> {
                 Set<ServerEndpointConfig> configFilteredEndpoints =
                         config.getEndpointConfigs(scannedEndpointClazzes);
                 if (configFilteredEndpoints != null) {
@@ -139,10 +139,10 @@ public class WsSci implements ServletContainerInitializer {
                 Set<Class<?>> configFilteredPojos =
                         config.getAnnotatedEndpointClasses(
                                 scannedPojoEndpoints);
-                if (configFilteredPojos != null) {
-                    filteredPojoEndpoints.addAll(configFilteredPojos);
-                }
-            }
+                return configFilteredPojos;
+            }).filter((configFilteredPojos) -> (configFilteredPojos != null)).forEachOrdered((configFilteredPojos) -> {
+                filteredPojoEndpoints.addAll(configFilteredPojos);
+            });
         }
 
         try {

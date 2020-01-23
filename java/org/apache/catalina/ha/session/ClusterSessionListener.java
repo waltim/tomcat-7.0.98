@@ -73,8 +73,7 @@ public class ClusterSessionListener extends ClusterListener {
             //if so, wait until we are fully started up
             Map<String,ClusterManager> managers = cluster.getManagers() ;
             if (ctxname == null) {
-                for (Map.Entry<String, ClusterManager> entry :
-                        managers.entrySet()) {
+                managers.entrySet().forEach((entry) -> {
                     if (entry.getValue() != null)
                         entry.getValue().messageDataReceived(msg);
                     else {
@@ -84,7 +83,7 @@ public class ClusterSessionListener extends ClusterListener {
                             log.debug("Context manager doesn't exist:"
                                     + entry.getKey());
                     }
-                }
+                });
             } else {
                 ClusterManager mgr = managers.get(ctxname);
                 if (mgr != null) {

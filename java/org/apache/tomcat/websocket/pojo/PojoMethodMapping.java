@@ -183,9 +183,9 @@ public class PojoMethodMapping {
                 overriddenOnMessage.add(messageHandler);
             }
         }
-        for (MessageHandlerInfo messageHandler : overriddenOnMessage) {
+        overriddenOnMessage.forEach((messageHandler) -> {
             onMessage.remove(messageHandler);
-        }
+        });
         this.onOpen = open;
         this.onClose = close;
         this.onError = error;
@@ -272,10 +272,10 @@ public class PojoMethodMapping {
             Map<String,String> pathParameters, Session session,
             EndpointConfig config) {
         Set<MessageHandler> result = new HashSet<MessageHandler>();
-        for (MessageHandlerInfo messageMethod : onMessage) {
+        onMessage.forEach((messageMethod) -> {
             result.addAll(messageMethod.getMessageHandlers(pojo, pathParameters,
                     session, config));
-        }
+        });
         return result;
     }
 

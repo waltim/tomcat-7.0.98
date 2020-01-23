@@ -88,11 +88,13 @@ public class MultiThrowable extends Throwable {
         sb.append(": ");
         sb.append(size());
         sb.append(" wrapped Throwables: ");
-        for (Throwable t : throwables) {
+        throwables.stream().map((t) -> {
             sb.append("[");
             sb.append(t.getMessage());
+            return t;
+        }).forEachOrdered((_item) -> {
             sb.append("]");
-        }
+        });
 
         return sb.toString();
     }

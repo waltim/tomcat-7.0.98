@@ -500,13 +500,7 @@ public class DefaultInstanceManager implements InstanceManager {
         Class<?> clazz;
         if (SecurityUtil.isPackageProtectionEnabled()) {
             try {
-                clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-
-                    @Override
-                    public Class<?> run() throws Exception {
-                        return loadClass(className, classLoader);
-                    }
-                });
+                clazz = AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>) () -> loadClass(className, classLoader));
             } catch (PrivilegedActionException e) {
                 Throwable t = e.getCause();
                 if (t instanceof ClassNotFoundException) {
@@ -662,7 +656,7 @@ public class DefaultInstanceManager implements InstanceManager {
         if (properties.isEmpty()) {
             return;
         }
-        for (Map.Entry<Object, Object> e : properties.entrySet()) {
+        properties.entrySet().forEach((e) -> {
             if ("restricted".equals(e.getValue())) {
                 classNames.add(e.getKey().toString());
             } else {
@@ -670,7 +664,7 @@ public class DefaultInstanceManager implements InstanceManager {
                         "defaultInstanceManager.restrictedWrongValue",
                         resourceName, e.getKey(), e.getValue()));
             }
-        }
+        });
     }
 
     private static String normalize(String jndiName){
@@ -684,22 +678,18 @@ public class DefaultInstanceManager implements InstanceManager {
             final AnnotationCacheEntry entry) {
         Method result = null;
         if (Globals.IS_SECURITY_ENABLED) {
-            result = AccessController.doPrivileged(
-                    new PrivilegedAction<Method>() {
-                        @Override
-                        public Method run() {
-                            Method result = null;
-                            try {
-                                result = clazz.getDeclaredMethod(
-                                        entry.getAccessibleObjectName(),
-                                        entry.getParamTypes());
-                            } catch (NoSuchMethodException e) {
-                                // Should never happen. On that basis don't log
-                                // it.
-                            }
-                            return result;
-                        }
-                    });
+            result = AccessController.doPrivileged((PrivilegedAction<Method>) () -> {
+                Method result1 = null;
+                try {
+                    result1 = clazz.getDeclaredMethod(
+                            entry.getAccessibleObjectName(),
+                            entry.getParamTypes());
+                }catch (NoSuchMethodException e) {
+                    // Should never happen. On that basis don't log
+                    // it.
+                }
+                return result1;
+            });
         } else {
             try {
                 result = clazz.getDeclaredMethod(
@@ -715,21 +705,17 @@ public class DefaultInstanceManager implements InstanceManager {
             final AnnotationCacheEntry entry) {
         Field result = null;
         if (Globals.IS_SECURITY_ENABLED) {
-            result = AccessController.doPrivileged(
-                    new PrivilegedAction<Field>() {
-                        @Override
-                        public Field run() {
-                            Field result = null;
-                            try {
-                                result = clazz.getDeclaredField(
-                                        entry.getAccessibleObjectName());
-                            } catch (NoSuchFieldException e) {
-                                // Should never happen. On that basis don't log
-                                // it.
-                            }
-                            return result;
-                        }
-                    });
+            result = AccessController.doPrivileged((PrivilegedAction<Field>) () -> {
+                Field result1 = null;
+                try {
+                    result1 = clazz.getDeclaredField(
+                            entry.getAccessibleObjectName());
+                }catch (NoSuchFieldException e) {
+                    // Should never happen. On that basis don't log
+                    // it.
+                }
+                return result1;
+            });
         } else {
             try {
                 result = clazz.getDeclaredField(

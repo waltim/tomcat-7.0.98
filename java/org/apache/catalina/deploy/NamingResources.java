@@ -953,32 +953,30 @@ public class NamingResources extends LifecycleMBeanBase implements Serializable 
         // timing issues. Duplication registration is not an issue.
         resourceRequireExplicitRegistration = true;
 
-        for (ContextResource cr : resources.values()) {
+        resources.values().forEach((cr) -> {
             try {
                 MBeanUtils.createMBean(cr);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanCreateFail", cr.getName()), e);
             }
-        }
-
-        for (ContextEnvironment ce : envs.values()) {
+        });
+        envs.values().forEach((ce) -> {
             try {
                 MBeanUtils.createMBean(ce);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanCreateFail", ce.getName()), e);
             }
-        }
-
-        for (ContextResourceLink crl : resourceLinks.values()) {
+        });
+        resourceLinks.values().forEach((crl) -> {
             try {
                 MBeanUtils.createMBean(crl);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanCreateFail", crl.getName()), e);
             }
-        }
+        });
     }
 
 
@@ -1083,32 +1081,30 @@ public class NamingResources extends LifecycleMBeanBase implements Serializable 
         resourceRequireExplicitRegistration = false;
 
         // Destroy in reverse order to create, although it should not matter
-        for (ContextResourceLink crl : resourceLinks.values()) {
+        resourceLinks.values().forEach((crl) -> {
             try {
                 MBeanUtils.destroyMBean(crl);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanDestroyFail", crl.getName()), e);
             }
-        }
-
-        for (ContextEnvironment ce : envs.values()) {
+        });
+        envs.values().forEach((ce) -> {
             try {
                 MBeanUtils.destroyMBean(ce);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanDestroyFail", ce.getName()), e);
             }
-        }
-
-        for (ContextResource cr : resources.values()) {
+        });
+        resources.values().forEach((cr) -> {
             try {
                 MBeanUtils.destroyMBean(cr);
             } catch (Exception e) {
                 log.warn(sm.getString(
                         "namingResources.mbeanDestroyFail", cr.getName()), e);
             }
-        }
+        });
 
         super.destroyInternal();
     }

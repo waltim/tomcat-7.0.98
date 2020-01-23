@@ -294,10 +294,10 @@ public class ServiceRefFactory implements ObjectFactory {
                     handlerInfo.setHandlerConfig(config);
 
                     if (!portNames.isEmpty()) {
-                        for (String portName : portNames) {
+                        portNames.forEach((portName) -> {
                             initHandlerChain(new QName(portName), handlerRegistry,
                                     handlerInfo, soaproles);
-                        }
+                        });
                     } else {
                         Enumeration<QName> e = portComponentRef.elements();
                         while(e.hasMoreElements()) {

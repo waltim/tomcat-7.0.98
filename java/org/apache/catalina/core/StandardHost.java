@@ -673,15 +673,14 @@ public class StandardHost extends ContainerBase implements Host {
 
         List<String> result = new ArrayList<String>();
 
-        for (Map.Entry<ClassLoader, String> entry :
-                childClassLoaders.entrySet()) {
+        childClassLoaders.entrySet().forEach((entry) -> {
             ClassLoader cl = entry.getKey();
             if (cl instanceof WebappClassLoaderBase) {
                 if (!((WebappClassLoaderBase) cl).isStarted()) {
                     result.add(entry.getValue());
                 }
             }
-        }
+        });
 
         return result.toArray(new String[result.size()]);
     }

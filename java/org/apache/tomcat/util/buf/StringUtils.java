@@ -68,8 +68,7 @@ public final class StringUtils {
 
 
     public static void join(Iterable<String> iterable, char separator, StringBuilder sb) {
-        join(iterable, separator,
-                new Function<String>() {@Override public String apply(String t) { return t; }}, sb);
+        join(iterable, separator, (String t) -> t, sb);
     }
 
 

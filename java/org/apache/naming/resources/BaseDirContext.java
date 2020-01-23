@@ -393,15 +393,13 @@ public abstract class BaseDirContext implements DirContext {
      * Release any resources allocated for this directory context.
      */
     public void release() {
-        for(BaseDirContext bcontext: this.aliases.values()) {
+        this.aliases.values().forEach((bcontext) -> {
             bcontext.release();
-        }
+        });
         this.aliases.clear();
-        for(DirContext dcontext: this.altDirContexts) {
-            if(dcontext instanceof BaseDirContext) {
-                ((BaseDirContext)dcontext).release();
-            }
-        }
+        this.altDirContexts.stream().filter((dcontext) -> (dcontext instanceof BaseDirContext)).forEachOrdered((dcontext) -> {
+            ((BaseDirContext)dcontext).release();
+        });
         this.altDirContexts.clear();
     }
 

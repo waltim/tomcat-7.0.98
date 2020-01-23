@@ -625,14 +625,14 @@ public class HostConfig
             }
         }
 
-        for (Future<?> result : results) {
+        results.forEach((result) -> {
             try {
                 result.get();
             } catch (Exception e) {
                 log.error(sm.getString(
                         "hostConfig.deployDescriptor.threaded.error"), e);
             }
-        }
+        });
     }
 
 
@@ -860,14 +860,14 @@ public class HostConfig
             }
         }
 
-        for (Future<?> result : results) {
+        results.forEach((result) -> {
             try {
                 result.get();
             } catch (Exception e) {
                 log.error(sm.getString(
                         "hostConfig.deployWar.threaded.error"), e);
             }
-        }
+        });
     }
 
 
@@ -1193,14 +1193,14 @@ public class HostConfig
             }
         }
 
-        for (Future<?> result : results) {
+        results.forEach((result) -> {
             try {
                 result.get();
             } catch (Exception e) {
                 log.error(sm.getString(
                         "hostConfig.deployDir.threaded.error"), e);
             }
-        }
+        });
     }
 
 

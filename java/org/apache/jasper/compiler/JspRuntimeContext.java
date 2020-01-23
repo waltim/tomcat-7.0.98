@@ -431,7 +431,7 @@ public final class JspRuntimeContext {
         // OK to process reload flag now.
         compileCheckInProgress = false;
         // Ensure all servlets and tags that need to be reloaded, are reloaded.
-        for (JspServletWrapper jsw : wrappersToReload) {
+        wrappersToReload.forEach((jsw) -> {
             // Triggers reload
             try {
                 if (jsw.isTagFile()) {
@@ -447,7 +447,7 @@ public final class JspRuntimeContext {
             } catch (ServletException e) {
                 jsw.getServletContext().log("Servlet reload failed", e);
             }
-        }
+        });
     }
 
     public boolean isCompileCheckInProgress() {

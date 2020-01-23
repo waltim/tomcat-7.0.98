@@ -84,9 +84,9 @@ public final class RemoteCIDRFilter extends FilterBase {
             return;
         }
 
-        for (final String message : messages) {
+        messages.forEach((message) -> {
             log.error(message);
-        }
+        });
 
         throw new IllegalArgumentException(sm.getString("remoteCidrFilter.invalid", "allow"));
     }
@@ -116,9 +116,9 @@ public final class RemoteCIDRFilter extends FilterBase {
         if (messages.isEmpty())
             return;
 
-        for (final String message : messages) {
+        messages.forEach((message) -> {
             log.error(message);
-        }
+        });
 
         throw new IllegalArgumentException(sm.getString("remoteCidrFilter.invalid", "deny"));
     }
@@ -175,16 +175,11 @@ public final class RemoteCIDRFilter extends FilterBase {
             return false;
         }
 
-        for (final NetMask nm : deny) {
-            if (nm.matches(addr)) {
-                return false;
-            }
+        if (!deny.stream().noneMatch((nm) -> (nm.matches(addr)))) {
+            return false;
         }
-
-        for (final NetMask nm : allow) {
-            if (nm.matches(addr)) {
-                return true;
-            }
+        if (allow.stream().anyMatch((nm) -> (nm.matches(addr)))) {
+            return true;
         }
 
         // Allow if deny is specified but allow isn't

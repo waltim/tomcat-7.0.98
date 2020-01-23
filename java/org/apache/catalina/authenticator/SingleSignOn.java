@@ -428,15 +428,15 @@ public class SingleSignOn extends ValveBase {
                 containerLog.debug(sm.getString("singleSignOn.debug.deregisterNone", ssoId));
             }
         }
-        for (SingleSignOnSessionKey ssoKey : ssoKeys) {
+        ssoKeys.stream().map((ssoKey) -> {
             if (containerLog.isDebugEnabled()) {
                 containerLog.debug(sm.getString("singleSignOn.debug.deregister", ssoKey, ssoId));
             }
+            return ssoKey;
+        }).forEachOrdered((ssoKey) -> {
             // Invalidate this session
             expire(ssoKey);
-        }
-
-        // NOTE:  Clients may still possess the old single sign on cookie,
+        }); // NOTE:  Clients may still possess the old single sign on cookie,
         // but it will be removed on the next request since it is no longer
         // in the cache
     }

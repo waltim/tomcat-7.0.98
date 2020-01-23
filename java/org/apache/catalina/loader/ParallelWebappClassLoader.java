@@ -39,12 +39,9 @@ public class ParallelWebappClassLoader extends WebappClassLoaderBase {
                 // parallel class loading capable
                 final Method registerParallel =
                         ClassLoader.class.getDeclaredMethod("registerAsParallelCapable");
-                AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                    @Override
-                    public Object run() {
-                        registerParallel.setAccessible(true);
-                        return null;
-                    }
+                AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                    registerParallel.setAccessible(true);
+                    return null;
                 });
                 Boolean result = (Boolean)registerParallel.invoke(null);
                 if (!result.booleanValue()) {

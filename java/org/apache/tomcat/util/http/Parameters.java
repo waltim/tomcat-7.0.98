@@ -528,14 +528,17 @@ public final class Parameters {
      */
     public String paramsAsString() {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, ArrayList<String>> e : paramHashValues.entrySet()) {
+        paramHashValues.entrySet().stream().map((e) -> {
             sb.append(e.getKey()).append('=');
-            ArrayList<String> values = e.getValue();
-            for (String value : values) {
+            return e;
+        }).map((e) -> e.getValue()).map((values) -> {
+            values.forEach((value) -> {
                 sb.append(value).append(',');
-            }
+            });
+            return values;
+        }).forEachOrdered((_item) -> {
             sb.append('\n');
-        }
+        });
         return sb.toString();
     }
 

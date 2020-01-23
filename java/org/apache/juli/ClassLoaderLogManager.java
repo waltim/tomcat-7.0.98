@@ -164,12 +164,9 @@ public class ClassLoaderLogManager extends LogManager {
         final String levelString = getProperty(loggerName + ".level");
         if (levelString != null) {
             try {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    @Override
-                    public Void run() {
-                        logger.setLevel(Level.parse(levelString.trim()));
-                        return null;
-                    }
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                    logger.setLevel(Level.parse(levelString.trim()));
+                    return null;
                 });
             } catch (IllegalArgumentException e) {
                 // Leave level set to null
@@ -371,9 +368,9 @@ public class ClassLoaderLogManager extends LogManager {
     public synchronized void shutdown() {
         // The JVM is being shutdown. Make sure all loggers for all class
         // loaders are shutdown
-        for (ClassLoaderLogInfo clLogInfo : classLoaderLoggers.values()) {
+        classLoaderLoggers.values().forEach((clLogInfo) -> {
             resetLoggers(clLogInfo);
-        }
+        });
     }
 
     // -------------------------------------------------------- Private Methods
@@ -385,19 +382,19 @@ public class ClassLoaderLogManager extends LogManager {
         // handlers that the current class loader does not own would be not
         // good.
         synchronized (clLogInfo) {
-            for (Logger logger : clLogInfo.loggers.values()) {
+            clLogInfo.loggers.values().forEach((logger) -> {
                 Handler[] handlers = logger.getHandlers();
                 for (Handler handler : handlers) {
                     logger.removeHandler(handler);
                 }
-            }
-            for (Handler handler : clLogInfo.handlers.values()) {
+            });
+            clLogInfo.handlers.values().forEach((handler) -> {
                 try {
                     handler.close();
                 } catch (Exception e) {
                     // Ignore
                 }
-            }
+            });
             clLogInfo.handlers.clear();
         }
     }
@@ -420,16 +417,13 @@ public class ClassLoaderLogManager extends LogManager {
         ClassLoaderLogInfo info = classLoaderLoggers.get(classLoader);
         if (info == null) {
             final ClassLoader classLoaderParam = classLoader;
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    try {
-                        readConfiguration(classLoaderParam);
-                    } catch (IOException e) {
-                        // Ignore
-                    }
-                    return null;
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                try {
+                    readConfiguration(classLoaderParam);
+                } catch (IOException e) {
+                    // Ignore
                 }
+                return null;
             });
             info = classLoaderLoggers.get(classLoader);
         }
@@ -621,12 +615,9 @@ public class ClassLoaderLogManager extends LogManager {
      */
     protected static void doSetParentLogger(final Logger logger,
             final Logger parent) {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            @Override
-            public Void run() {
-                logger.setParent(parent);
-                return null;
-            }
+        AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+            logger.setParent(parent);
+            return null;
         });
     }
 

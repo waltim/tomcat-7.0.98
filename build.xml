@@ -634,8 +634,8 @@
     <javac srcdir="java" destdir="${tomcat.classes}"
            debug="${compile.debug}"
            deprecation="${compile.deprecation}"
-           source="${compile.source}"
-           target="${compile.target}"
+           source="1.8"
+           target="1.8"
            release="${compile.release}"
            encoding="ISO-8859-1"
            includeAntRuntime="true" >
@@ -688,8 +688,8 @@
     <javac srcdir="java" destdir="${tomcat.classes}"
            debug="${compile.debug}"
            deprecation="${compile.deprecation}"
-           source="${compile.source}"
-           target="${compile.target}"
+           source="1.8"
+           target="1.8"
            encoding="ISO-8859-1"
            includeAntRuntime="true" >
       <compilerarg value="-Xlint:unchecked"/>
@@ -733,8 +733,8 @@
     <javac sourcepath="" srcdir="java" destdir="${tomcat.classes}"
            debug="${compile.debug}"
            deprecation="${compile.deprecation}"
-           source="${compile.source}"
-           target="${compile.target}"
+           source="1.8"
+           target="1.8"
            excludes="**/.svn/**"
            encoding="ISO-8859-1"
            includeAntRuntime="true"
@@ -751,8 +751,8 @@
   <target name="build-manifests" unless="manifests.uptodate"
           depends="build-prepare">
     <!-- Filtering tokens for JAR manifests-->
-    <filter token="source.jdk" value="${compile.source}"/>
-    <filter token="target.jdk" value="${compile.target}"/>
+    <filter token="source.jdk" value="1.8"/>
+    <filter token="target.jdk" value="1.8"/>
     <filter token="servlet.revision" value="${servlet.revision}"/>
     <filter token="jsp.revision" value="${jsp.revision}"/>
     <filter token="el.revision" value="${el.revision}"/>
@@ -1175,8 +1175,8 @@
     <javac   srcdir="webapps/examples/WEB-INF/classes"
              destdir="${tomcat.build}/webapps/examples/WEB-INF/classes"
              debug="${compile.debug}" deprecation="${compile.deprecation}"
-             source="${compile.source}"
-             target="${compile.target}"
+             source="1.8"
+             target="1.8"
              release="${compile.release}"
              classpath="${tomcat.classes}"
              encoding="ISO-8859-1"
@@ -1187,8 +1187,8 @@
     <javac   srcdir="webapps/examples/jsp/plugin/applet"
              destdir="${tomcat.build}/webapps/examples/jsp/plugin/applet"
              debug="${compile.debug}" deprecation="${compile.deprecation}"
-             source="${compile.source}"
-             target="${compile.target}"
+             source="1.8"
+             target="1.8"
              release="${compile.release}"
              classpath="${tomcat.classes}"
              encoding="ISO-8859-1"
@@ -1414,8 +1414,8 @@
     <javac srcdir="test" destdir="${test.classes}"
            debug="${compile.debug}"
            deprecation="${compile.deprecation}"
-           source="${compile.source}"
-           target="${compile.target}"
+           source="1.8"
+           target="1.8"
            release="${compile.release}"
            encoding="ISO-8859-1"
            includeantruntime="true">
@@ -1873,7 +1873,7 @@
     <javac srcdir="java" destdir="${tomcat.classes}"
            debug="${compile.debug}"
            deprecation="${compile.deprecation}"
-           source="${compile.source}"
+           source="1.8"
            encoding="ISO-8859-1"
            includeantruntime="false">
       <classpath refid="tomcat.webservices.classpath" />
@@ -2062,7 +2062,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="UTF-8"
       charset="UTF-8"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options}"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true">
       <classpath>
@@ -2083,7 +2083,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="ISO-8859-1"
       charset="ISO-8859-1"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options}"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true"
       executable="${java.7.home}/bin/javadoc">
@@ -2105,7 +2105,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="ISO-8859-1"
       charset="ISO-8859-1"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options}"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true"
       executable="${java.7.home}/bin/javadoc">
@@ -2127,7 +2127,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="ISO-8859-1"
       charset="ISO-8859-1"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options}"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true"
       executable="${java.7.home}/bin/javadoc">
@@ -2149,7 +2149,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="ISO-8859-1"
       charset="ISO-8859-1"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options}"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true"
       executable="${java.7.home}/bin/javadoc">
@@ -2170,7 +2170,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       docencoding="ISO-8859-1"
       charset="ISO-8859-1"
       additionalparam="-breakiterator -notimestamp ${java9.javadoc.options} -J-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -XDignore.symbol.file"
-      source="${compile.source}"
+      source="1.8"
       maxmemory="512m"
       failonerror="true"
       executable="${java.7.home}/bin/javadoc"

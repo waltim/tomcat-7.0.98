@@ -86,7 +86,7 @@ public class BackgroundProcessManager {
         synchronized (processesLock) {
             currentProcesses.addAll(processes);
         }
-        for (BackgroundProcess process : currentProcesses) {
+        currentProcesses.forEach((process) -> {
             try {
                 process.backgroundProcess();
             } catch (Throwable t) {
@@ -94,7 +94,7 @@ public class BackgroundProcessManager {
                 log.error(sm.getString(
                         "backgroundProcessManager.processFailed"), t);
             }
-        }
+        });
     }
 
 

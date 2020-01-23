@@ -791,10 +791,9 @@ public class CorsFilter implements Filter {
 
         Set<String> setAllowedHttpHeaders = parseStringToSet(allowedHttpHeaders);
         Set<String> lowerCaseHeaders = new HashSet<String>();
-        for (String header : setAllowedHttpHeaders) {
-            String lowerCase = header.toLowerCase(Locale.ENGLISH);
+        setAllowedHttpHeaders.stream().map((header) -> header.toLowerCase(Locale.ENGLISH)).forEachOrdered((lowerCase) -> {
             lowerCaseHeaders.add(lowerCase);
-        }
+        });
         this.allowedHttpHeaders.clear();
         this.allowedHttpHeaders.addAll(lowerCaseHeaders);
 

@@ -432,16 +432,16 @@ public class TestRealmBase {
         SecurityConstraint constraintOne = new SecurityConstraint();
         if (constraintOneRoles != null) {
             constraintOne.setAuthConstraint(true);
-            for (String constraintRole : constraintOneRoles) {
+            constraintOneRoles.forEach((constraintRole) -> {
                 constraintOne.addAuthRole(constraintRole);
-            }
+            });
         }
         SecurityConstraint constraintTwo = new SecurityConstraint();
         if (constraintTwoRoles != null) {
             constraintTwo.setAuthConstraint(true);
-            for (String constraintRole : constraintTwoRoles) {
+            constraintTwoRoles.forEach((constraintRole) -> {
                 constraintTwo.addAuthRole(constraintRole);
-            }
+            });
         }
         SecurityConstraint[] constraints =
                 new SecurityConstraint[] { constraintOne, constraintTwo };
@@ -450,9 +450,9 @@ public class TestRealmBase {
         Request request = new Request();
         Response response = new TesterResponse();
         Context context = new TesterContext();
-        for (String applicationRole : applicationRoles) {
+        applicationRoles.forEach((applicationRole) -> {
             context.addSecurityRole(applicationRole);
-        }
+        });
         request.setContext(context);
 
         // Set up an authenticated user

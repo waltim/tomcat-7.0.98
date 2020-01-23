@@ -962,11 +962,9 @@ public class DeltaSession extends StandardSession implements Externalizable,Clus
 
         // Serializable listeners
         ArrayList<SessionListener> saveListeners = new ArrayList<SessionListener>();
-        for (SessionListener listener : listeners) {
-            if (listener instanceof ReplicatedSessionListener) {
-                saveListeners.add(listener);
-            }
-        }
+        listeners.stream().filter((listener) -> (listener instanceof ReplicatedSessionListener)).forEachOrdered((listener) -> {
+            saveListeners.add(listener);
+        });
         stream.writeObject(Integer.valueOf(saveListeners.size()));
         for (SessionListener listener : saveListeners) {
             stream.writeObject(listener);

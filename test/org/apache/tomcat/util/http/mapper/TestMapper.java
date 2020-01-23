@@ -90,21 +90,21 @@ public class TestMapper extends LoggingBaseTest {
         mapper.addWrappers("iowejoiejfoiew", "/foo", "0", wrappersForContext1);
         mapperForContext1 = new Mapper();
         mapperForContext1.setContext("/foo", new String[0], null);
-        for (WrapperMappingInfo wrapper : wrappersForContext1) {
+        wrappersForContext1.forEach((wrapper) -> {
             mapperForContext1.addWrapper(wrapper.getMapping(),
                     wrapper.getWrapper(), wrapper.isJspWildCard(),
                     wrapper.isResourceOnly());
-        }
+        });
 
         mapper.addWrappers("iowejoiejfoiew", "/foo/bar", "0",
                 wrappersForContext2);
         mapperForContext2 = new Mapper();
         mapperForContext2.setContext("/foo/bar", new String[0], null);
-        for (WrapperMappingInfo wrapper : wrappersForContext2) {
+        wrappersForContext2.forEach((wrapper) -> {
             mapperForContext2.addWrapper(wrapper.getMapping(),
                     wrapper.getWrapper(), wrapper.isJspWildCard(),
                     wrapper.isResourceOnly());
-        }
+        });
 
         mapper.addContextVersion(
                 "iowejoiejfoiew",

@@ -90,12 +90,14 @@ public class TestCharsetCachePerformance {
         private static final Map<String,Charset> cache = new HashMap<String, Charset>();
 
         static {
-            for (Charset charset: Charset.availableCharsets().values()) {
+            Charset.availableCharsets().values().stream().map((charset) -> {
                 cache.put(charset.name().toLowerCase(Locale.ENGLISH), charset);
-                for (String alias : charset.aliases()) {
+                return charset;
+            }).forEachOrdered((charset) -> {
+                charset.aliases().forEach((alias) -> {
                     cache.put(alias.toLowerCase(Locale.ENGLISH), charset);
-                }
-            }
+                });
+            });
         }
 
 

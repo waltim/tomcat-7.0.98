@@ -801,7 +801,7 @@ public class DeltaManager extends ClusterManagerBase{
                 waitForSendAllSessions(beforeSendTime);
             } finally {
                 synchronized(receivedMessageQueue) {
-                    for (SessionMessage smsg : receivedMessageQueue) {
+                    receivedMessageQueue.forEach((smsg) -> {
                         if (!stateTimestampDrop) {
                             messageReceived(smsg, smsg.getAddress() != null ? (Member) smsg.getAddress() : null);
                         } else {
@@ -819,7 +819,7 @@ public class DeltaManager extends ClusterManagerBase{
                                 }
                             }
                         }
-                    }
+                    });
                     receivedMessageQueue.clear();
                     receiverQueue = false ;
                 }

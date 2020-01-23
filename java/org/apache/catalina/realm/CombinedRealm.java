@@ -74,12 +74,10 @@ public class CombinedRealm extends RealmBase {
      */
     public ObjectName[] getRealms() {
         ObjectName[] result = new ObjectName[realms.size()];
-        for (Realm realm : realms) {
-            if (realm instanceof RealmBase) {
-                result[realms.indexOf(realm)] =
+        realms.stream().filter((realm) -> (realm instanceof RealmBase)).forEachOrdered((realm) -> {
+            result[realms.indexOf(realm)] =
                     ((RealmBase) realm).getObjectName();
-            }
-        }
+        });
         return result;
     }
 
@@ -202,16 +200,17 @@ public class CombinedRealm extends RealmBase {
      */
     @Override
     public void setContainer(Container container) {
-        for(Realm realm : realms) {
+        realms.stream().map((realm) -> {
             // Set the realmPath for JMX naming
             if (realm instanceof RealmBase) {
                 ((RealmBase) realm).setRealmPath(
                         getRealmPath() + "/realm" + realms.indexOf(realm));
             }
-
+            return realm;
+        }).forEachOrdered((realm) -> {
             // Set the container for sub-realms. Mainly so logging works.
             realm.setContainer(container);
-        }
+        });
         super.setContainer(container);
     }
 
@@ -286,9 +285,9 @@ public class CombinedRealm extends RealmBase {
     public void backgroundProcess() {
         super.backgroundProcess();
 
-        for (Realm r : realms) {
+        realms.forEach((r) -> {
             r.backgroundProcess();
-        }
+        });
     }
 
     /**

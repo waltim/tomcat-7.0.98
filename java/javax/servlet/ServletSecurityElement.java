@@ -125,13 +125,13 @@ public class ServletSecurityElement extends HttpConstraintElement {
         if (httpMethodConstraints == null) {
             return;
         }
-        for (HttpMethodConstraintElement constraint : httpMethodConstraints) {
+        httpMethodConstraints.forEach((constraint) -> {
             String method = constraint.getMethodName();
             if (methodConstraints.containsKey(method)) {
                 throw new IllegalArgumentException(
                         "Duplicate method name: " + method);
             }
             methodConstraints.put(method, constraint);
-        }
+        });
     }
 }

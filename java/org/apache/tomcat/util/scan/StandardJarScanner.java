@@ -161,10 +161,10 @@ public class StandardJarScanner implements JarScanner {
         // Scan WEB-INF/lib
         Set<String> dirList = context.getResourcePaths(Constants.WEB_INF_LIB);
         if (dirList != null) {
-            for (String path : dirList) {
+            dirList.forEach((path) -> {
                 if (path.endsWith(Constants.JAR_EXT) &&
-                    !Matcher.matchName(ignoredJars,
-                        path.substring(path.lastIndexOf('/')+1))) {
+                        !Matcher.matchName(ignoredJars,
+                                path.substring(path.lastIndexOf('/')+1))) {
                     // Need to scan this JAR
                     if (log.isDebugEnabled()) {
                         log.debug(sm.getString("jarScan.webinflibJarScan", path));
@@ -188,7 +188,7 @@ public class StandardJarScanner implements JarScanner {
                         log.trace(sm.getString("jarScan.webinflibJarNoScan", path));
                     }
                 }
-            }
+            });
         }
 
         // Scan the classpath
@@ -257,24 +257,21 @@ public class StandardJarScanner implements JarScanner {
             JreCompat.getInstance().addBootModulePath(modulePathUrls);
             urls.addAll(modulePathUrls);
             // Process URLs
-            for (URL url : urls) {
-                if (!processedURLs.contains(url)) {
-                    // Avoid duplicates
-                    processedURLs.add(url);
-
-                    // Extract the jarName if there is one to be found
-                    String jarName = getJarName(url);
-                    if (jarName != null && Matcher.matchName(ignoredJars, jarName)) {
-                        continue;
-                    }
-
+            urls.stream().filter((url) -> (!processedURLs.contains(url))).map((url) -> {
+                // Avoid duplicates
+                processedURLs.add(url);
+                return url;
+            }).forEachOrdered((url) -> {
+                // Extract the jarName if there is one to be found
+                String jarName = getJarName(url);
+                if (!(jarName != null && Matcher.matchName(ignoredJars, jarName))) {
                     try {
                         process(callback, url);
                     } catch (IOException ioe) {
                         log.warn(sm.getString("jarScan.classloaderFail",url), ioe);
                     }
                 }
-            }
+            });
         }
 
     }
