@@ -43,21 +43,18 @@ public class Async0 extends HttpServlet {
             resp.setContentType("text/plain");
             final AsyncContext actx = req.startAsync();
             actx.setTimeout(Long.MAX_VALUE);
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        req.setAttribute("dispatch", Boolean.TRUE);
-                        Thread.currentThread().setName("Async0-Thread");
-                        log.info("Putting AsyncThread to sleep");
-                        Thread.sleep(2*1000);
-                        log.info("Dispatching");
-                        actx.dispatch();
-                    }catch (InterruptedException x) {
-                        log.error("Async1",x);
-                    }catch (IllegalStateException x) {
-                        log.error("Async1",x);
-                    }
+            Runnable run = () -> {
+                try {
+                    req.setAttribute("dispatch", Boolean.TRUE);
+                    Thread.currentThread().setName("Async0-Thread");
+                    log.info("Putting AsyncThread to sleep");
+                    Thread.sleep(2*1000);
+                    log.info("Dispatching");
+                    actx.dispatch();
+                }catch (InterruptedException x) {
+                    log.error("Async1",x);
+                }catch (IllegalStateException x) {
+                    log.error("Async1",x);
                 }
             };
             Thread t = new Thread(run);

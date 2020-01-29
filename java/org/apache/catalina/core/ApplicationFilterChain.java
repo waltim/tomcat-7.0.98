@@ -22,6 +22,7 @@ package org.apache.catalina.core;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -184,14 +185,10 @@ final class ApplicationFilterChain implements FilterChain, CometFilterChain {
             final ServletResponse res = response;
             try {
                 java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction<Void>() {
-                        @Override
-                        public Void run()
-                            throws ServletException, IOException {
+                        (PrivilegedExceptionAction<Void>) () -> {
                             internalDoFilter(req,res);
                             return null;
                         }
-                    }
                 );
             } catch( PrivilegedActionException pe) {
                 Exception e = pe.getException();
@@ -351,14 +348,10 @@ final class ApplicationFilterChain implements FilterChain, CometFilterChain {
             final CometEvent ev = event;
             try {
                 java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedExceptionAction<Void>() {
-                        @Override
-                        public Void run()
-                            throws ServletException, IOException {
+                        (PrivilegedExceptionAction<Void>) () -> {
                             internalDoFilterEvent(ev);
                             return null;
                         }
-                    }
                 );
             } catch( PrivilegedActionException pe) {
                 Exception e = pe.getException();

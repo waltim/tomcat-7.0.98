@@ -55,32 +55,17 @@ public class BodyContentImpl extends BodyContent {
                     Constants.DEFAULT_TAG_BUFFER_SIZE).intValue();
         } else {
             LINE_SEPARATOR = AccessController.doPrivileged(
-                    new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("line.separator");
-                        }
-                    }
+                    (PrivilegedAction<String>) () -> System.getProperty("line.separator")
             );
             LIMIT_BUFFER = AccessController.doPrivileged(
-                    new PrivilegedAction<Boolean>() {
-                        @Override
-                        public Boolean run() {
-                            return Boolean.valueOf(System.getProperty(
-                                    "org.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER",
-                                    "false"));
-                        }
-                    }
+                    (PrivilegedAction<Boolean>) () -> Boolean.valueOf(System.getProperty(
+                            "org.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER",
+                            "false"))
             ).booleanValue();
             TAG_BUFFER_SIZE = AccessController.doPrivileged(
-                    new PrivilegedAction<Integer>() {
-                        @Override
-                        public Integer run() {
-                            return Integer.getInteger(
-                                    "org.apache.jasper.runtime.BodyContentImpl.BUFFER_SIZE",
-                                    Constants.DEFAULT_TAG_BUFFER_SIZE);
-                        }
-                    }
+                    (PrivilegedAction<Integer>) () -> Integer.getInteger(
+                            "org.apache.jasper.runtime.BodyContentImpl.BUFFER_SIZE",
+                            Constants.DEFAULT_TAG_BUFFER_SIZE)
             ).intValue();
         }
     }

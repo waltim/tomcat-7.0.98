@@ -70,12 +70,7 @@ public class CloseReason {
 
         public static CloseCode getCloseCode(final int code) {
             if (code > 2999 && code < 5000) {
-                return new CloseCode() {
-                    @Override
-                    public int getCode() {
-                        return code;
-                    }
-                };
+                return () -> code;
             }
             switch (code) {
                 case 1000:

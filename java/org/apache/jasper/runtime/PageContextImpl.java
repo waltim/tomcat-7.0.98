@@ -225,12 +225,7 @@ public class PageContextImpl extends PageContext {
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return AccessController.doPrivileged(
-                    new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    return doGetAttribute(name);
-                }
-            });
+                    (PrivilegedAction<Object>) () -> doGetAttribute(name));
         } else {
             return doGetAttribute(name);
         }
@@ -251,12 +246,7 @@ public class PageContextImpl extends PageContext {
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return AccessController.doPrivileged(
-                    new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    return doGetAttribute(name, scope);
-                }
-            });
+                    (PrivilegedAction<Object>) () -> doGetAttribute(name, scope));
         } else {
             return doGetAttribute(name, scope);
         }
@@ -295,12 +285,9 @@ public class PageContextImpl extends PageContext {
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    doSetAttribute(name, attribute);
-                    return null;
-                }
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                doSetAttribute(name, attribute);
+                return null;
             });
         } else {
             doSetAttribute(name, attribute);
@@ -324,12 +311,9 @@ public class PageContextImpl extends PageContext {
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    doSetAttribute(name, o, scope);
-                    return null;
-                }
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                doSetAttribute(name, o, scope);
+                return null;
             });
         } else {
             doSetAttribute(name, o, scope);
@@ -376,12 +360,9 @@ public class PageContextImpl extends PageContext {
                     .getMessage("jsp.error.attribute.null_name"));
         }
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    doRemoveAttribute(name, scope);
-                    return null;
-                }
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                doRemoveAttribute(name, scope);
+                return null;
             });
         } else {
             doRemoveAttribute(name, scope);
@@ -425,12 +406,7 @@ public class PageContextImpl extends PageContext {
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (AccessController
-                    .doPrivileged(new PrivilegedAction<Integer>() {
-                        @Override
-                        public Integer run() {
-                            return Integer.valueOf(doGetAttributeScope(name));
-                        }
-                    })).intValue();
+                    .doPrivileged((PrivilegedAction<Integer>) () -> Integer.valueOf(doGetAttributeScope(name)))).intValue();
         } else {
             return doGetAttributeScope(name);
         }
@@ -463,17 +439,14 @@ public class PageContextImpl extends PageContext {
     public Object findAttribute(final String name) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return AccessController.doPrivileged(
-                    new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    if (name == null) {
-                        throw new NullPointerException(Localizer
-                                .getMessage("jsp.error.attribute.null_name"));
-                    }
+                    (PrivilegedAction<Object>) () -> {
+                        if (name == null) {
+                            throw new NullPointerException(Localizer
+                                    .getMessage("jsp.error.attribute.null_name"));
+                        }
 
-                    return doFindAttribute(name);
-                }
-            });
+                        return doFindAttribute(name);
+                    });
         } else {
             if (name == null) {
                 throw new NullPointerException(Localizer
@@ -512,12 +485,7 @@ public class PageContextImpl extends PageContext {
     public Enumeration<String> getAttributeNamesInScope(final int scope) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return AccessController.doPrivileged(
-                    new PrivilegedAction<Enumeration<String>>() {
-                        @Override
-                        public Enumeration<String> run() {
-                            return doGetAttributeNamesInScope(scope);
-                        }
-                    });
+                    (PrivilegedAction<Enumeration<String>>) () -> doGetAttributeNamesInScope(scope));
         } else {
             return doGetAttributeNamesInScope(scope);
         }
@@ -555,12 +523,9 @@ public class PageContextImpl extends PageContext {
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    doRemoveAttribute(name);
-                    return null;
-                }
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                doRemoveAttribute(name);
+                return null;
             });
         } else {
             doRemoveAttribute(name);
@@ -664,13 +629,10 @@ public class PageContextImpl extends PageContext {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             try {
                 AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Void>() {
-                    @Override
-                    public Void run() throws Exception {
-                        doInclude(relativeUrlPath, flush);
-                        return null;
-                    }
-                });
+                        (PrivilegedExceptionAction<Void>) () -> {
+                            doInclude(relativeUrlPath, flush);
+                            return null;
+                        });
             } catch (PrivilegedActionException e) {
                 Exception ex = e.getException();
                 if (ex instanceof IOException) {
@@ -702,13 +664,10 @@ public class PageContextImpl extends PageContext {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             try {
                 AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Void>() {
-                    @Override
-                    public Void run() throws Exception {
-                        doForward(relativeUrlPath);
-                        return null;
-                    }
-                });
+                        (PrivilegedExceptionAction<Void>) () -> {
+                            doForward(relativeUrlPath);
+                            return null;
+                        });
             } catch (PrivilegedActionException e) {
                 Exception ex = e.getException();
                 if (ex instanceof IOException) {
@@ -827,13 +786,10 @@ public class PageContextImpl extends PageContext {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             try {
                 AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Void>() {
-                    @Override
-                    public Void run() throws Exception {
-                        doHandlePageException(t);
-                        return null;
-                    }
-                });
+                        (PrivilegedExceptionAction<Void>) () -> {
+                            doHandlePageException(t);
+                            return null;
+                        });
             } catch (PrivilegedActionException e) {
                 Exception ex = e.getException();
                 if (ex instanceof IOException) {

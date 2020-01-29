@@ -154,12 +154,7 @@ public final class Room {
         return new TimerTask() {
             @Override
             public void run() {
-                invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        broadcastTimerTick();
-                    }
-                });
+                invokeAndWait(() -> broadcastTimerTick());
             }
         };
     }
@@ -386,13 +381,10 @@ public final class Room {
      * Shuts down the roomExecutor and the drawmessageBroadcastTimer.
      */
     public void shutdown() {
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                closed = true;
-                drawmessageBroadcastTimer.cancel();
-                roomGraphics.dispose();
-            }
+        invokeAndWait(() -> {
+            closed = true;
+            drawmessageBroadcastTimer.cancel();
+            roomGraphics.dispose();
         });
     }
 

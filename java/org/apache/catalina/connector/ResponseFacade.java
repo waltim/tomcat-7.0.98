@@ -284,16 +284,12 @@ public class ResponseFacade
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Void>(){
+                        (PrivilegedExceptionAction<Void>) () -> {
+                            response.setAppCommitted(true);
 
-                    @Override
-                    public Void run() throws IOException{
-                        response.setAppCommitted(true);
-
-                        response.flushBuffer();
-                        return null;
-                    }
-                });
+                            response.flushBuffer();
+                            return null;
+                        });
             } catch(PrivilegedActionException e){
                 Exception ex = e.getException();
                 if (ex instanceof IOException){

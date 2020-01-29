@@ -135,13 +135,9 @@ public class FileHandler extends Handler {
                         return t;
                     } finally {
                         if (isSecurityEnabled) {
-                            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                                @Override
-                                public Void run() {
-                                    Thread.currentThread().setContextClassLoader(loader);
-                                    return null;
-                                }
+                            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+                                Thread.currentThread().setContextClassLoader(loader);
+                                return null;
                             });
                         } else {
                             Thread.currentThread().setContextClassLoader(loader);
@@ -525,15 +521,11 @@ public class FileHandler extends Handler {
         if (maxDays <= 0) {
             return;
         }
-        DELETE_FILES_SERVICE.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                for (File file : streamFilesForDelete()) {
-                    if (!file.delete()) {
-                        reportError("Unable to delete log files older than [" + maxDays + "] days",
-                                null, ErrorManager.GENERIC_FAILURE);
-                    }
+        DELETE_FILES_SERVICE.submit(() -> {
+            for (File file : streamFilesForDelete()) {
+                if (!file.delete()) {
+                    reportError("Unable to delete log files older than [" + maxDays + "] days",
+                            null, ErrorManager.GENERIC_FAILURE);
                 }
             }
         });
@@ -542,22 +534,18 @@ public class FileHandler extends Handler {
     private File[] streamFilesForDelete() {
         final Date maxDaysOffset = getMaxDaysOffset();
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        return new File(directory).listFiles(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                boolean result = false;
-                String date = obtainDateFromFilename(name);
-                if (date != null) {
-                    try {
-                        Date dateFromFile = formatter.parse(date);
-                        result = dateFromFile.before(maxDaysOffset);
-                    } catch (ParseException e) {
-                        // no-op
-                    }
+        return new File(directory).listFiles((dir, name) -> {
+            boolean result = false;
+            String date = obtainDateFromFilename(name);
+            if (date != null) {
+                try {
+                    Date dateFromFile = formatter.parse(date);
+                    result = dateFromFile.before(maxDaysOffset);
+                } catch (ParseException e) {
+                    // no-op
                 }
-                return result;
             }
+            return result;
         });
     }
 

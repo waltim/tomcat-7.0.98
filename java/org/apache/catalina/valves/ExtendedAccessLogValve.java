@@ -625,19 +625,15 @@ public class ExtendedAccessLogValve extends AccessLogValve {
             if ("ip".equals(nextToken)) {
                 return new LocalAddrElement();
             } else if ("dns".equals(nextToken)) {
-                return new AccessLogElement() {
-                    @Override
-                    public void addElement(StringBuilder buf, Date date,
-                            Request request, Response response, long time) {
-                        String value;
-                        try {
-                            value = InetAddress.getLocalHost().getHostName();
-                        } catch (Throwable e) {
-                            ExceptionUtils.handleThrowable(e);
-                            value = "localhost";
-                        }
-                        buf.append(value);
+                return (buf, date, request, response, time) -> {
+                    String value;
+                    try {
+                        value = InetAddress.getLocalHost().getHostName();
+                    } catch (Throwable e) {
+                        ExceptionUtils.handleThrowable(e);
+                        value = "localhost";
                     }
+                    buf.append(value);
                 };
             }
         } else if ("cs".equals(token)) {
@@ -665,33 +661,24 @@ public class ExtendedAccessLogValve extends AccessLogValve {
                     if ("stem".equals(token)) {
                         return new RequestURIElement();
                     } else if ("query".equals(token)) {
-                        return new AccessLogElement() {
-                            @Override
-                            public void addElement(StringBuilder buf, Date date,
-                                    Request request, Response response,
-                                    long time) {
-                                String query = request.getQueryString();
-                                if (query != null) {
-                                    buf.append(query);
-                                } else {
-                                    buf.append('-');
-                                }
+                        return (buf, date, request, response, time) -> {
+                            String query = request.getQueryString();
+                            if (query != null) {
+                                buf.append(query);
+                            } else {
+                                buf.append('-');
                             }
                         };
                     }
                 } else {
-                    return new AccessLogElement() {
-                        @Override
-                        public void addElement(StringBuilder buf, Date date,
-                                Request request, Response response, long time) {
-                            String query = request.getQueryString();
-                            if (query == null) {
-                                buf.append(request.getRequestURI());
-                            } else {
-                                buf.append(request.getRequestURI());
-                                buf.append('?');
-                                buf.append(request.getQueryString());
-                            }
+                    return (buf, date, request, response, time) -> {
+                        String query = request.getQueryString();
+                        if (query == null) {
+                            buf.append(request.getRequestURI());
+                        } else {
+                            buf.append(request.getRequestURI());
+                            buf.append('?');
+                            buf.append(request.getQueryString());
                         }
                     };
                 }
@@ -787,94 +774,28 @@ public class ExtendedAccessLogValve extends AccessLogValve {
 
     protected AccessLogElement getServletRequestElement(String parameter) {
         if ("authType".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getAuthType()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getAuthType()));
         } else if ("remoteUser".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getRemoteUser()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getRemoteUser()));
         } else if ("requestedSessionId".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getRequestedSessionId()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getRequestedSessionId()));
         } else if ("requestedSessionIdFromCookie".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(""
-                            + request.isRequestedSessionIdFromCookie()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(""
+                    + request.isRequestedSessionIdFromCookie()));
         } else if ("requestedSessionIdValid".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap("" + request.isRequestedSessionIdValid()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap("" + request.isRequestedSessionIdValid()));
         } else if ("contentLength".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap("" + request.getContentLength()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap("" + request.getContentLength()));
         } else if ("characterEncoding".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getCharacterEncoding()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getCharacterEncoding()));
         } else if ("locale".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getLocale()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getLocale()));
         } else if ("protocol".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap(request.getProtocol()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap(request.getProtocol()));
         } else if ("scheme".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(request.getScheme());
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(request.getScheme());
         } else if ("secure".equals(parameter)) {
-            return new AccessLogElement() {
-                @Override
-                public void addElement(StringBuilder buf, Date date,
-                        Request request, Response response, long time) {
-                    buf.append(wrap("" + request.isSecure()));
-                }
-            };
+            return (buf, date, request, response, time) -> buf.append(wrap("" + request.isSecure()));
         }
         log.error("x param for servlet request, couldn't decode value: "
                 + parameter);
